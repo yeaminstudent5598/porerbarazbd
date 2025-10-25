@@ -1,3 +1,4 @@
+// tsconfig.json
 {
   "compilerOptions": {
     "target": "ES2017",
@@ -22,23 +23,31 @@
         "name": "next"
       }
     ],
+    // --- Path Alias (No src folder) ---
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ], // Points to root
+      "@/components/*": [
+        "./components/*"
+      ], // Specific component alias
+      "@/lib/*": [
+        "./lib/*"
+      ] // Specific lib alias
     }
+    // ---------------------------------
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next"
   ]
 }
