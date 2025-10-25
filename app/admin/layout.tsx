@@ -1,9 +1,9 @@
-// src/app/(admin)/admin/layout.tsx
-'use client'; // Required for Sheet, DropdownMenu, useNavigate
+// src/app/(admin)/layout.tsx // <-- CORRECT PATH for the layout of the admin section
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // Use next/navigation
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   Home,
@@ -13,7 +13,6 @@ import {
   LineChart,
   Menu,
 } from 'lucide-react';
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,12 +25,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from '@/lib/utils'; // For conditional classes
+import { cn } from '@/lib/utils';
 
-// অ্যাডমিন সাইডবারের লিঙ্ক
 const adminNavLinks = [
   { name: 'Dashboard', href: '/admin', icon: Home },
-  { name: 'Orders', href: '/admin/orders', icon: ShoppingCart, badge: '6' }, // Example badge
+  { name: 'Orders', href: '/admin/orders', icon: ShoppingCart, badge: '6' },
   { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Analytics', href: '/admin/analytics', icon: LineChart },
@@ -42,33 +40,31 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname(); // Get current path for active links
+  const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = () => {
     console.log("Admin logging out...");
-    // TODO: Implement admin logout logic (clear token, etc.)
-    router.push('/login'); // Redirect to login page
+    // TODO: Implement admin logout logic
+    router.push('/login');
   };
 
-
   return (
+    // Layout structure remains the same as previously provided
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-
-      {/* ===== Desktop Sidebar (Dark Theme) ===== */}
+      {/* Desktop Sidebar (Dark Theme) */}
       <aside className="hidden border-r border-gray-700 bg-gray-900 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           {/* Sidebar Header */}
           <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6">
             <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
               <Package className="h-6 w-6 text-green-500" />
-              <span className="text-xl">PorerBazar Admin</span> {/* Updated Name */}
+              <span className="text-xl">PorerBazar Admin</span>
             </Link>
           </div>
           {/* Sidebar Navigation */}
           <nav className="flex-1 overflow-auto py-4 px-2 text-base font-medium lg:px-4">
             {adminNavLinks.map((link) => {
-              // Basic check for active link (can be more sophisticated)
               const isActive = (link.href === '/admin' && pathname === '/admin') || (link.href !== '/admin' && pathname?.startsWith(link.href));
               return (
                 <Link
@@ -95,23 +91,21 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      {/* ===== Mobile Header & Main Content ===== */}
+      {/* Mobile Header & Main Content */}
       <div className="flex flex-col">
         {/* Header */}
         <header className="flex h-14 items-center gap-4 border-b bg-white px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
-          {/* Mobile Menu Trigger (Sheet) */}
+          {/* Mobile Menu Trigger */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="shrink-0 md:hidden h-9 w-9"> <Menu className="h-5 w-5" /> <span className="sr-only">Toggle navigation menu</span> </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col p-0 bg-gray-900 border-r-0 w-full max-w-[280px]">
-              {/* Mobile Sidebar Header */}
               <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6">
                 <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
                   <Package className="h-6 w-6 text-green-500" /> <span className="text-xl">PorerBazar Admin</span>
                 </Link>
               </div>
-              {/* Mobile Sidebar Navigation */}
               <nav className="flex-1 overflow-auto py-4 px-2 text-base font-medium lg:px-4">
                 {adminNavLinks.map((link) => {
                    const isActive = (link.href === '/admin' && pathname === '/admin') || (link.href !== '/admin' && pathname?.startsWith(link.href));
@@ -140,7 +134,7 @@ export default function AdminLayout({
             </SheetContent>
           </Sheet>
 
-          {/* Header Right Side (Notification & Profile) */}
+          {/* Header Right Side */}
           <div className="w-full flex-1" /> {/* Spacer */}
           <Button variant="outline" size="icon" className="relative h-9 w-9">
             <Bell className="h-4 w-4" />

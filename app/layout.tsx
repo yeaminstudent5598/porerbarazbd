@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { Poppins, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { cn } from "./lib/utils";
 // TODO: Import Providers (Auth, Cart, Theme, QueryClient etc.)
 
 const poppins = Poppins({

@@ -1,4 +1,4 @@
-// src/app/(admin)/admin/page.tsx
+// src/app/(admin)/admin/page.tsx // <-- CORRECT PATH
 import React from 'react';
 import {
   Card,
@@ -7,11 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DollarSign, Package, ShoppingCart, Users } from 'lucide-react'; // Added Users icon
+import { DollarSign, Package, ShoppingCart, Users } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-// TODO: Fetch this data from API
+// TODO: Fetch this data from your API
 const dashboardStats = {
     revenue: 45231.89,
     revenueChange: "+20.1%",
@@ -23,13 +23,15 @@ const dashboardStats = {
     customersChange: "+5"
 };
 
-const AdminHomePage = () => {
+// Component name should match filename convention (PascalCase)
+export default function AdminDashboardPage() { // Renamed component
   return (
     <div>
       <h2 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h2>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"> {/* Changed grid cols */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Total Revenue Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -40,6 +42,7 @@ const AdminHomePage = () => {
             <p className="text-xs text-muted-foreground">{dashboardStats.revenueChange} from last month</p>
           </CardContent>
         </Card>
+        {/* Total Orders Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
@@ -50,6 +53,7 @@ const AdminHomePage = () => {
             <p className="text-xs text-muted-foreground">{dashboardStats.ordersChange} from last month</p>
           </CardContent>
         </Card>
+        {/* Total Products Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
@@ -60,7 +64,8 @@ const AdminHomePage = () => {
             <p className="text-xs text-muted-foreground">{dashboardStats.productsChange} since last week</p>
           </CardContent>
         </Card>
-        <Card> {/* Added Customers Card */}
+        {/* Total Customers Card */}
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -72,14 +77,14 @@ const AdminHomePage = () => {
         </Card>
       </div>
 
-      {/* Quick Actions or Recent Orders (Example) */}
+      {/* Quick Actions & Recent Activity */}
       <div className="mt-8 grid gap-4 md:grid-cols-2">
           <Card>
               <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
-                  <Button asChild size="sm">
+                  <Button asChild size="sm" className="bg-green-600 hover:bg-green-700">
                       <Link href="/admin/products/add">Add Product</Link>
                   </Button>
                   <Button asChild variant="outline" size="sm">
@@ -96,14 +101,11 @@ const AdminHomePage = () => {
                   <CardDescription>Latest orders and sign-ups.</CardDescription>
               </CardHeader>
               <CardContent>
-                  {/* TODO: Add a list of recent activities */}
+                  {/* TODO: Add a list of recent activities from API */}
                   <p className="text-sm text-muted-foreground">No recent activity.</p>
               </CardContent>
           </Card>
       </div>
-
     </div>
   );
-};
-
-export default AdminHomePage;
+}
