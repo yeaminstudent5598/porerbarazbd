@@ -3,7 +3,7 @@
 
 import React, { useRef } from 'react'; // useRef for constraints
 import { motion } from 'framer-motion';
-import { ProductCard } from '@/components/shared/ProductCard'; // Import shared card
+import { ProductCard } from '../../shared/ProductCard';
 
 // Demo Data (replace with actual bestsellers)
 const bestsellers = [
