@@ -10,7 +10,7 @@ import { Phone, Search, Truck, User, ShoppingCart, Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion';
 import Marquee from "react-fast-marquee";
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils'; // For shadcn class merging
+import { cn } from '@/app/lib/utils';
 
 // Page Links (for mobile menu primarily)
 const pageLinks = [
