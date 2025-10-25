@@ -3,8 +3,10 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { ProductCard } from '../../shared/ProductCard';
+import Link from 'next/link';
 // === Import shared ProductCard and variants ===
-import { ProductCard, itemVariants } from '@/components/shared/ProductCard'; // Adjust path if needed
 
 // Demo product data (same as before)
 // TODO: Replace with actual data, maybe fetched or limited for homepage
