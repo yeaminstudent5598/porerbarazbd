@@ -31,7 +31,7 @@ export default function MainLayout({
 
       {/* Animated Hover Admin Button */}
       <motion.div
-        className="fixed bottom-16 right-6 z-50 overflow-hidden" // Placed here to be above footer potentially
+        className="fixed bottom-20 right-6 z-50 overflow-hidden" // Placed here to be above footer potentially
         variants={buttonVariants}
         initial="rest"
         whileHover="hover"
