@@ -4,7 +4,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Leaf, Truck, ShieldCheck, Award } from 'lucide-react'; // Icons
-
+import { Variants } from "framer-motion";
 const features = [
   {
     icon: <Leaf size={40} className="text-green-600" />,
@@ -39,14 +39,24 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100 }
+
+
+// Define item variants
+const itemVariants: Variants = {
+  hidden: { 
+    opacity: 0, 
+    y: 20 
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      type: "spring" as const, // fixed type issue
+      stiffness: 120
+    }
   }
 };
+
 
 const WhyChooseUs = () => {
   return (
