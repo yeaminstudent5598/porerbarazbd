@@ -1,8 +1,8 @@
 // src/components/home/process/OurProcess.tsx
-'use client'; // motion requires client component
+'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Leaf, Award, PackageCheck, Truck } from 'lucide-react'; // Icons
 
 // Process steps data
@@ -30,30 +30,27 @@ const processSteps = [
 ];
 
 // Animation Variants
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.15, // Stagger effect
-    }
+    transition: { staggerChildren: 0.15 }
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 50, scale: 0.9 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: "spring", stiffness: 100 }
+    transition: { type: "spring" as const, stiffness: 100 } // as const fixes TS type error
   }
 };
 
-
-const OurProcess = () => {
+const OurProcess: React.FC = () => {
   return (
-    <section className="py-16 bg-white"> {/* White background */}
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
 
         {/* Section Title */}
@@ -67,9 +64,7 @@ const OurProcess = () => {
           <h2 className="text-3xl font-bold text-gray-900">
             কীভাবে আমরা <span className="text-green-700">খাঁটি মান</span> নিশ্চিত করি?
           </h2>
-          <p className="text-gray-600 mt-2">
-            গ্রামের উঠান থেকে আপনার রান্নাঘর পর্যন্ত
-          </p>
+          <p className="text-gray-600 mt-2">গ্রামের উঠান থেকে আপনার রান্নাঘর পর্যন্ত</p>
         </motion.div>
 
         {/* Steps Grid */}
@@ -78,14 +73,14 @@ const OurProcess = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }} // Trigger animation slightly earlier
+          viewport={{ once: true, amount: 0.2 }}
         >
           {processSteps.map((step, index) => (
             <motion.div
               key={index}
-              className="relative bg-gray-50 p-6 rounded-lg shadow-lg text-center transition-shadow duration-300 hover:shadow-xl border-b-4 border-green-600" // Added border-bottom
+              className="relative bg-gray-50 p-6 rounded-lg shadow-lg text-center transition-shadow duration-300 hover:shadow-xl border-b-4 border-green-600"
               variants={itemVariants}
-              whileHover={{ y: -5 }} // Slight lift on hover
+              whileHover={{ y: -5 }}
             >
               {/* Step Number Badge */}
               <span className="absolute -top-4 -left-4 bg-green-600 text-white font-bold rounded-full h-10 w-10 flex items-center justify-center text-xl shadow-md">
@@ -98,12 +93,8 @@ const OurProcess = () => {
               </div>
 
               {/* Title & Description */}
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                {step.title}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {step.description}
-              </p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">{step.title}</h3>
+              <p className="text-gray-600 text-sm">{step.description}</p>
             </motion.div>
           ))}
         </motion.div>
