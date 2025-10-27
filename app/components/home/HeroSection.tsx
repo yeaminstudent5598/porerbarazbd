@@ -1,7 +1,5 @@
 // src/components/home/HeroSection.tsx
 'use client'; // motion requires client component
-
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
@@ -9,7 +7,7 @@ import Link from 'next/link';
 
 const HeroSection = () => {
   // TODO: Replace with your high-quality banner image URL
-  const heroImageUrl = "https://i.ibb.co.com/0pvVK2p1/Whats-App-Image-2025-09-17-at-17-41-49-8ba3fe82.jpg";
+  const heroImageUrl = "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974";
 
   return (
     <section

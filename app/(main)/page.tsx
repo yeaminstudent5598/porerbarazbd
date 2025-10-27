@@ -7,6 +7,7 @@ import Bestsellers from '../components/home/bestsellers/Bestsellers';
 import Deals from '../components/home/dealsOfTheDay/Deals';
 import OurProcess from '../components/home/process/OurProcess';
 import Testimonials from '../components/home/testimonials/Testimonials';
+import BannerSlider from '../components/home/BannerSlider';
 
 
 // This is likely a Server Component by default in App Router
@@ -14,7 +15,8 @@ export default function HomePage() {
   return (
     // Optional: Add a top-level div if needed, otherwise React.Fragment is fine
     <>
-      <HeroSection />
+      {/* <HeroSection /> */}
+      <BannerSlider/>
       <CategoryShop />
       <WhyChooseUs />
       <Bestsellers />

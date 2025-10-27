@@ -1,22 +1,22 @@
-// next.config.mjs (অথবা .js/.ts)
-
+// next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // reactStrictMode: true, (আপনার অন্যান্য কনফিগ)
-  
-  // এই অংশটি যোগ করুন
+  // ... আপনার অন্যান্য কনফিগারেশন ...
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'i.ibb.co', // আপনার ইমেজ হোস্টের ডোমেইন
+        hostname: 'i.ibb.co.com', // <-- এটি যোগ করুন
+        port: '',
+        pathname: '/**',
       },
-      // আপনি যদি অন্য হোস্ট (যেমন efoodis.com) ব্যবহার করেন, সেটিও যোগ করুন
       {
         protocol: 'https',
         hostname: 'efoodis.com',
+        port: '',
+        pathname: '/**',
       },
-      // ... (অন্যান্য ডোমেইন)
+      // ... অন্যান্য ডোমেইন ...
     ],
   },
 };

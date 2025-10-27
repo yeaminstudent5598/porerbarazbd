@@ -80,9 +80,9 @@ const Navbar = () => {
           <Link href="/" className="flex-shrink-0">
             <motion.img
               // TODO: আপনার আসল লোগো ব্যবহার করুন (/public ফোল্ডারে রাখুন)
-              src="/logo.png" // ধরে নিচ্ছি logo.png public ফোল্ডারে আছে
+              src="https://i.ibb.co.com/vxsq679p/Gemini-Generated-Image-deyncbdeyncbdeyn-removebg-preview.png" // ধরে নিচ্ছি logo.png public ফোল্ডারে আছে
               alt="Porer Bazar BD"
-              className="h-12 md:h-14" // উচ্চতা ঠিক করুন
+              className="w-16" // উচ্চতা ঠিক করুন
               whileHover={{ scale: 1.05 }}
               width={150} // আনুমানিক প্রস্থ দিন
               height={56} // আনুমানিক উচ্চতা দিন

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -11,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve", // "preserve" ব্যবহার করা ভালো
+    "jsx": "react-jsx", // "preserve" ব্যবহার করা ভালো
     "incremental": true,
     "plugins": [
       {
@@ -21,12 +25,24 @@
     // --- এই অংশটি সবচেয়ে গুরুত্বপূর্ণ (src ছাড়া) ---
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"], // @/* এখন রুট ফোল্ডারকে নির্দেশ করবে
-      "@/components/*": ["./components/*"],
-      "@/lib/*": ["./lib/*"],
-      "@/app/*": ["./app/*"],
-      "@/modules/*": ["./modules/*"],
-      "@/models/*": ["./models/*"]
+      "@/*": [
+        "./*"
+      ], // @/* এখন রুট ফোল্ডারকে নির্দেশ করবে
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/modules/*": [
+        "./modules/*"
+      ],
+      "@/models/*": [
+        "./models/*"
+      ]
       // ... অন্যান্য ফোল্ডার ...
     }
     // -----------------------------------------
@@ -35,7 +51,12 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next\\dev/types/**/*.ts",
+    ".next\\dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next"]
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }
