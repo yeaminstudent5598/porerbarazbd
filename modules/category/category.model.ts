@@ -37,11 +37,9 @@ const productSchema = new Schema<IProduct, IProductModel>(
       type: String, 
       required: [true, 'Image URL is required'] 
     },
-    // === Cloudinary Public ID (ডিলিট করার জন্য) ===
     imagePublicId: {
       type: String,
     },
-    // ============================================
     status: {
       type: String,
       enum: ['Active', 'Draft', 'Out of Stock'],
@@ -56,16 +54,21 @@ const productSchema = new Schema<IProduct, IProductModel>(
     timestamps: true,
     toJSON: {
       virtuals: true,
-      transform: function (doc, ret: any) { delete ret.__v; return ret; },
+      transform: function (doc, ret: any) { // <-- ret-কে any টাইপ দিন
+        delete ret.__v; // <-- এখন এটি এরর দেবে না
+        return ret;
+      },
     },
     toObject: {
       virtuals: true,
-      transform: function (doc, ret: any) { delete ret.__v; return ret; },
+      transform: function (doc, ret: any) { // <-- ret-কে any টাইপ দিন
+        delete ret.__v; // <-- এখন এটি এরর দেবে না
+        return ret;
+      },
     }
   }
 );
 
-// Stock Middleware (unchanged)
 productSchema.pre('save', function (next) {
   if (this.isModified('stock') && this.stock === 0) {
     this.status = 'Out of Stock';

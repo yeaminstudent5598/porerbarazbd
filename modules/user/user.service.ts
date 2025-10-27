@@ -3,51 +3,43 @@ import User from './user.model';
 import { IUser } from './user.interface';
 import AppError from '@/app/lib/utils/AppError';
 
-// Create new user in DB
-const createUserInDB = async (
-  userData: Omit<IUser, 'role'> & { role?: 'user' | 'admin' }
-): Promise<IUser> => {
-  const existingUser = await User.findOne({ email: userData.email });
-  if (existingUser) {
-    throw new AppError(409, 'User with this email already exists');
-  }
+// Input type for creating user
+export type TCreateUser = {
+  name: string;
+  email: string;
+  password: string;
+  role?: 'user' | 'admin';
+};
 
-  const newUser = await User.create(userData);
-  
-  // Refetch to apply toJSON transform
-  const result = await User.findById(newUser._id);
-  if (!result) throw new AppError(500, 'Failed to create user'); // Should not happen
-  
-  return result.toJSON() as IUser; // toJSON() পাসওয়ার্ড বাদ দিয়ে দেবে
+// Create user in DB
+const createUserInDB = async (data: TCreateUser): Promise<IUser> => {
+  const user = await User.create(data);
+  return user;
 };
 
 // Find user by email (for login)
 const findUserByEmailWithPassword = async (
   email: string
 ): Promise<IUser | null> => {
-  // findOne() Mongoose Document (যা IUser এক্সটেন্ড করে) অথবা null রিটার্ন করে
-  const user: IUser | null = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password');
   return user;
 };
 
 // Find user by ID (for auth checks / getMe)
-const findUserById = async (
-  id: string
-): Promise<IUser | null> => {
-  const user: IUser | null = await User.findById(id); // Password not selected
+const findUserById = async (id: string): Promise<IUser | null> => {
+  const user = await User.findById(id); // password not selected
   return user;
 };
 
 // Update user profile
 const updateUserProfileInDB = async (
   userId: string,
-  updateData: Partial<Pick<IUser, 'name' /* | 'phone' etc */>>
+  updateData: Partial<Pick<IUser, 'name' /* | other fields */>>
 ): Promise<IUser | null> => {
-  const updatedUser: IUser | null = await User.findByIdAndUpdate(
-    userId,
-    { $set: updateData },
-    { new: true, runValidators: true }
-  );
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+    runValidators: true,
+  });
   return updatedUser;
 };
 

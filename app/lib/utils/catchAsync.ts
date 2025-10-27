@@ -1,29 +1,24 @@
-// lib/utils/catchAsync.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
-import AppError from './AppError'; // আমরা একটি কাস্টম এরর ক্লাস তৈরি করবো
+import AppError from './AppError';
 
-// Define the type for our handler function
-type RouteHandler = (
+type RouteHandler<TParams extends Record<string, any> = any> = (
   req: NextRequest,
-  params: { [key: string]: string | string[] | undefined }
+  context: { params: TParams }
 ) => Promise<NextResponse>;
 
-// Higher-order function to wrap our controllers
-export const catchAsync = (fn: RouteHandler) => {
+export const catchAsync = <TParams extends Record<string, any> = any>(
+  fn: RouteHandler<TParams>
+) => {
   return async (
     req: NextRequest,
-    params: { [key: string]: string | string[] | undefined }
+    context: { params: TParams }
   ) => {
     try {
-      // Execute the actual controller function
-      return await fn(req, params);
+      return await fn(req, context);
     } catch (error: any) {
-      console.error('💥 UNHANDLED ERROR 💥', error);
+      console.error('💥 UNHANDLED ERROR in catchAsync 💥', error);
 
-      // --- Handle Different Error Types ---
-
-      // Zod Validation Error
       if (error instanceof ZodError) {
         return NextResponse.json(
           {
@@ -31,11 +26,10 @@ export const catchAsync = (fn: RouteHandler) => {
             message: 'Validation Failed',
             errors: error.flatten().fieldErrors,
           },
-          { status: 400 } // Bad Request
+          { status: 400 }
         );
       }
-      
-      // Custom App Error
+
       if (error instanceof AppError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -43,33 +37,29 @@ export const catchAsync = (fn: RouteHandler) => {
         );
       }
 
-      // Mongoose Validation Error
       if (error.name === 'ValidationError') {
-         return NextResponse.json(
+        return NextResponse.json(
           { success: false, message: 'Validation Error', errors: error.errors },
           { status: 400 }
         );
       }
 
-      // Mongoose Duplicate Key Error
       if (error.code === 11000) {
-         return NextResponse.json(
+        return NextResponse.json(
           { success: false, message: `Duplicate field value entered: ${Object.keys(error.keyValue).join(', ')}` },
-          { status: 409 } // Conflict
-        );
-      }
-      
-      // Mongoose Cast Error (Invalid ID)
-      if (error.name === 'CastError') {
-           return NextResponse.json(
-            { success: false, message: `Invalid resource ID: ${error.value}` },
-            { status: 400 }
+          { status: 409 }
         );
       }
 
-      // Default Server Error
+      if (error.name === 'CastError') {
+        return NextResponse.json(
+          { success: false, message: `Invalid resource ID: ${error.value}` },
+          { status: 400 }
+        );
+      }
+
       return NextResponse.json(
-        { success: false, message: 'Something went very wrong!' },
+        { success: false, message: 'Something went very wrong!', errorDetails: error.message },
         { status: 500 }
       );
     }
