@@ -12,6 +12,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'i.ibb.co', // <-- এটি যোগ করুন
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'efoodis.com',
         port: '',
         pathname: '/**',
