@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter, // Footer যোগ করা হয়েছে
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,9 +17,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"; // টেবিল ইম্পোর্ট
-import { Badge } from '@/components/ui/badge'; // ব্যাজ ইম্পোর্ট
-import { DollarSign, Package, ShoppingCart, Users, Activity, ListOrdered, TrendingUp, AlertTriangle, ArrowRight, Eye } from 'lucide-react';
+} from "@/components/ui/table";
+import { Badge } from '@/components/ui/badge';
+import {
+  DollarSign,
+  Package,
+  ShoppingCart,
+  Users,
+  Activity,
+  ListOrdered,
+  TrendingUp,
+  AlertTriangle,
+  ArrowRight,
+  Eye // <-- Eye আইকন ইম্পোর্ট করা আছে
+} from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,10 +40,21 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  TooltipProps // কাস্টম টুলটিপের জন্য
+  Tooltip
+  // TooltipProps, NameType, ValueType ইম্পোর্ট করার দরকার নেই
 } from 'recharts';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+// =============================================================
+// === টাইপস্ক্রিপ্ট এরর সমাধান (TooltipProps) ===
+// =============================================================
+// Tooltip-এর জন্য একটি কাস্টম ইন্টারফেস ডিফাইন করা
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[]; // payload-কে any[] হিসেবে গ্রহণ করা
+  label?: string | number;
+}
+// =============================================================
+
 
 // TODO: এই সব ডেমো ডেটা API থেকে fetch করতে হবে
 const dashboardStats = {
@@ -68,7 +90,7 @@ const lowStockProducts = [
     { id: 2, name: "ঝুড়ি পিঠা", stock: 8 },
 ];
 
-// অর্ডার স্ট্যাটাস ব্যাজ (ManageOrdersPage থেকে কপি)
+// অর্ডার স্ট্যাটাস ব্যাজ
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'Delivered': return <Badge className="bg-green-100 text-green-700">{status}</Badge>;
@@ -79,15 +101,15 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-// কাস্টম চার্ট টুলটিপ
-const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
+// --- কাস্টম চার্ট টুলটিপ (এখন CustomTooltipProps ব্যবহার করছে) ---
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-lg border bg-background p-2 shadow-sm">
         <div className="grid grid-cols-1 gap-1">
           <span className="text-[0.70rem] uppercase text-muted-foreground">{label}</span>
           <span className="font-bold text-green-600">
-            ৳ {payload[0].value?.toLocaleString('en-IN') ?? 0}
+            ৳ {payload[0]?.value?.toLocaleString('en-IN') ?? 0}
           </span>
         </div>
       </div>
@@ -95,6 +117,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameT
   }
   return null;
 };
+// --- এন্ড কাস্টম টুলটিপ ---
 
 
 export default function AdminDashboardPage() {
@@ -108,7 +131,7 @@ export default function AdminDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <div className="p-2 bg-green-100 rounded-md"> {/* কালারফুল আইকন ব্যাকগ্রাউন্ড */}
+            <div className="p-2 bg-green-100 rounded-md">
               <DollarSign className="h-4 w-4 text-green-600" />
             </div>
           </CardHeader>
@@ -211,7 +234,7 @@ export default function AdminDashboardPage() {
               </CardTitle>
               <CardDescription>The last 4 orders placed.</CardDescription>
             </CardHeader>
-            <CardContent className="p-0"> {/* Padding 0 for full-width table */}
+            <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -318,7 +341,6 @@ export default function AdminDashboardPage() {
              </CardFooter>
           </Card>
         </div>
-
       </div>
     </div>
   );
