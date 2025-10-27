@@ -8,10 +8,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"; // Ensure path is correct
+} from "@/components/ui/card";
 import {
   BarChart,
   Bar,
+  Rectangle, // For activeBar
   XAxis,
   YAxis,
   CartesianGrid,
@@ -20,14 +21,26 @@ import {
   ResponsiveContainer,
   AreaChart, // Changed from LineChart
   Area,      // Changed from Line
-  TooltipProps // Import TooltipProps type
-} from 'recharts'; // recharts imports
+} from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, Package, Users, DollarSign, Activity } from 'lucide-react'; // <-- Activity যোগ করা হয়েছেimport { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'; // Import types for custom tooltip
+import { TrendingUp, TrendingDown, Package, Users, DollarSign, Activity } from 'lucide-react'; // Activity ইম্পোর্ট করা আছে
+
+// =============================================================
+// === টাইপস্ক্রিপ্ট এরর সমাধান (TooltipProps) ===
+// =============================================================
+
+// Tooltip-এর জন্য একটি কাস্টম ইন্টারফেস ডিফাইন করা
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[]; // payload-কে any[] হিসেবে গ্রহণ করা
+  label?: string | number;
+}
+
+// =============================================================
 
 // Demo data for Revenue Overview (Last 6 Months)
 const salesData = [
-  { name: 'May \'25', revenue: 40000, previous: 35000 }, // Added previous month data for comparison ideas
+  { name: 'May \'25', revenue: 40000, previous: 35000 },
   { name: 'June \'25', revenue: 30000, previous: 40000 },
   { name: 'July \'25', revenue: 52000, previous: 30000 },
   { name: 'Aug \'25', revenue: 48000, previous: 52000 },
@@ -46,20 +59,17 @@ const topProductsData = [
 
 // Demo Key Metrics
 const keyMetrics = {
-    conversionRate: 2.5,
-    conversionChange: 0.2, // Positive change
-    avgOrderValue: 1150.75,
-    avgOrderValueChange: -50.20, // Negative change
-    newCustomers: 35,
-    newCustomersChange: 5, // Positive change
-}
+    conversionRate: 2.5, conversionChange: 0.2,
+    avgOrderValue: 1150.75, avgOrderValueChange: -50.20,
+    newCustomers: 35, newCustomersChange: 5,
+};
 
-// --- Custom Tooltip for Area Chart ---
-const CustomAreaTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
+// --- Custom Tooltip for Area Chart (এখন CustomTooltipProps ব্যবহার করছে) ---
+const CustomAreaTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-lg border bg-background p-2 shadow-sm">
-        <div className="grid grid-cols-1 gap-1"> {/* Changed grid structure */}
+        <div className="grid grid-cols-1 gap-1">
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">Month</span>
             <span className="font-bold">{label}</span>
@@ -67,16 +77,10 @@ const CustomAreaTooltip = ({ active, payload, label }: TooltipProps<ValueType, N
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">Revenue</span>
             <span className="font-bold text-green-600">
-              ৳ {payload[0].value?.toLocaleString('en-IN') ?? 0}
+              {/* payload এখন any, তাই payload[0] চেক করা নিরাপদ */}
+              ৳ {payload[0]?.value?.toLocaleString('en-IN') ?? 0}
             </span>
           </div>
-          {/* Optional: Add previous month comparison */}
-           {/* <div className="flex flex-col">
-            <span className="text-[0.70rem] uppercase text-muted-foreground">Previous</span>
-            <span className="font-bold text-gray-500">
-              ৳ {payload[0]?.payload?.previous?.toLocaleString('en-IN') ?? 0}
-            </span>
-          </div> */}
         </div>
       </div>
     );
@@ -84,13 +88,13 @@ const CustomAreaTooltip = ({ active, payload, label }: TooltipProps<ValueType, N
   return null;
 };
 
-// --- Custom Tooltip for Bar Chart ---
-const CustomBarTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
+// --- Custom Tooltip for Bar Chart (এখন CustomTooltipProps ব্যবহার করছে) ---
+const CustomBarTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-lg border bg-background p-2 shadow-sm">
          <p className="font-semibold text-sm mb-1">{label}</p>
-         <p className="text-xs text-green-700">Sold: {payload[0].value}</p>
+         <p className="text-xs text-green-700">Sold: {payload[0]?.value ?? 0}</p>
       </div>
     );
   }
@@ -100,18 +104,14 @@ const CustomBarTooltip = ({ active, payload, label }: TooltipProps<ValueType, Na
 
 
 export default function AnalyticsPage() {
-
-    // TODO: Add state and logic for time range selection
-    // const [timeRange, setTimeRange] = useState('last6months');
-
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
+      {/* Header with Time Range Selector */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <h2 className="text-3xl font-bold text-gray-900">
-          Analytics Overview
+          Sales & Product Analytics
         </h2>
-        {/* TODO: Implement time range functionality */}
+        {/* TODO: Implement time range selection functionality */}
         <Select defaultValue="last6months">
             <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Select Time Range" />
@@ -130,7 +130,6 @@ export default function AnalyticsPage() {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-                    {/* Icon can represent conversion funnel */}
                     <Activity className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -172,9 +171,8 @@ export default function AnalyticsPage() {
 
       {/* ===== Charts Section ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-
         {/* --- Revenue Area Chart (Larger) --- */}
-        <Card className="col-span-1 lg:col-span-3"> {/* Takes 3 columns */}
+        <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
                  <TrendingUp className="h-5 w-5 text-green-600"/> Revenue Overview
@@ -182,29 +180,26 @@ export default function AnalyticsPage() {
             <CardDescription>Sales performance trend.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}> {/* Adjusted height */}
+            <ResponsiveContainer width="100%" height={300}>
               <AreaChart
                 data={salesData}
-                margin={{ top: 5, right: 10, left: -15, bottom: 0 }} // Adjusted margins for better fit
+                margin={{ top: 5, right: 10, left: -15, bottom: 0 }}
               >
-                {/* Gradient Definition */}
                  <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#16a34a" stopOpacity={0.8}/>
                       <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false}/> {/* Hide vertical lines */}
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false}/>
                 <XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis unit="৳" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} width={50}/> {/* Added width */}
-                <Tooltip content={<CustomAreaTooltip />} cursor={{ fill: 'rgba(22, 163, 74, 0.1)' }}/> {/* Custom tooltip & cursor */}
-                {/* <Legend wrapperStyle={{ fontSize: '12px' }}/> */} {/* Optional Legend */}
+                <YAxis unit="৳" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} width={50}/>
+                <Tooltip content={<CustomAreaTooltip />} cursor={{ fill: 'rgba(22, 163, 74, 0.1)' }}/>
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#16a34a" // Line color
-                  fillOpacity={1}
-                  fill="url(#colorRevenue)" // Gradient fill
+                  stroke="#16a34a"
+                  fill="url(#colorRevenue)"
                   strokeWidth={2}
                   activeDot={{ r: 5, strokeWidth: 1, fill: '#ffffff', stroke: '#16a34a' }}
                   dot={{ r: 3, fill: '#16a34a', strokeWidth: 0 }}
@@ -215,7 +210,7 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* --- Top Product Bar Chart (Smaller) --- */}
-        <Card className="col-span-1 lg:col-span-2"> {/* Takes 2 columns */}
+        <Card className="col-span-1 lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
                  <Package className="h-5 w-5 text-orange-500"/> Top Selling Products
@@ -223,41 +218,36 @@ export default function AnalyticsPage() {
             <CardDescription>Quantity sold for top items.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}> {/* Adjusted height */}
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={topProductsData}
-                margin={{ top: 5, right: 10, left: -20, bottom: 0 }} // Adjusted margins
-                layout="vertical" // Changed to vertical bar chart
+                margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
+                layout="vertical"
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" horizontal={false}/> {/* Hide horizontal lines */}
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" horizontal={false}/>
                 <XAxis type="number" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis
                     dataKey="name"
-                    type="category" // Use category type for YAxis
-                    tick={{ fontSize: 10, width: 80 }} // Limit tick width
+                    type="category"
+                    tick={{ fontSize: 10, width: 80 }}
                     axisLine={false}
                     tickLine={false}
-                    width={80} // Adjust YAxis width
+                    width={80}
                  />
-                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'rgba(74, 222, 128, 0.1)' }}/> {/* Custom tooltip & cursor */}
-                {/* <Legend wrapperStyle={{ fontSize: '12px' }}/> */}
+                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'rgba(74, 222, 128, 0.1)' }}/>
                 <Bar
                   dataKey="sold"
-                  fill="#4ade80" // Lighter green
-                  background={{ fill: '#f0f0f0', radius: 4 }} // Add background to bars
-                  radius={[0, 4, 4, 0]} // Rounded right corners
-                  barSize={15} // Adjust bar thickness
-                >
-                   {/* Optional: Add labels inside bars */}
-                   {/* <LabelList dataKey="sold" position="right" style={{ fill: '#166534', fontSize: 10 }} /> */}
-                </Bar>
+                  fill="#4ade80"
+                  background={{ fill: '#f0f0f0', radius: 4 }}
+                  radius={[0, 4, 4, 0]}
+                  barSize={15}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
       </div>
-       {/* TODO: Add more sections like Recent Orders table, Low Stock items etc. */}
     </div>
   );
 }
