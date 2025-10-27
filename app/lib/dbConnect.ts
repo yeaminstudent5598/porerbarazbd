@@ -10,11 +10,13 @@ if (!MONGO_URI) {
 }
 
 // Maintain a cached connection object across invocations
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
 }
+
+// @ts-ignore
+let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
 
 async function dbConnect() {
   if (cached.conn) {
@@ -24,7 +26,7 @@ async function dbConnect() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false, // Optional: Disable buffering if connection fails
+      bufferCommands: false,
     };
 
     console.log('Creating new database connection');
@@ -33,12 +35,13 @@ async function dbConnect() {
       return mongooseInstance;
     });
   }
+
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    cached.promise = null; // Clear promise on error
+    cached.promise = null;
     console.error('Database connection error:', e);
-    throw e; // Re-throw error
+    throw e;
   }
 
   return cached.conn;
@@ -48,8 +51,6 @@ export default dbConnect;
 
 // Augment the NodeJS global type to add the mongoose property
 declare global {
-  var mongoose: {
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-  };
+  // @ts-ignore
+  var mongoose: MongooseCache;
 }
