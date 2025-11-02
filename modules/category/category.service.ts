@@ -1,11 +1,11 @@
 // modules/category/category.service.ts
 import config from '@/app/lib/config';
+import { ICategory } from './category.interface';
 import { v2 as cloudinary } from 'cloudinary';
 import Category from './category.model';
-import { ICategory } from './category.interface';
 import AppError from '@/app/lib/utils/AppError';
 
-// Configure Cloudinary
+// Cloudinary কনফিগার করুন
 cloudinary.config({
   cloud_name: config.cloudinary_cloud_name,
   api_key: config.cloudinary_api_key,
@@ -13,77 +13,94 @@ cloudinary.config({
   secure: true,
 });
 
+// --- টাইপ ডিফিনিশন ---
 type TCreateCategoryData = {
   name: string;
   slug?: string;
   imageUrl: string;
   imagePublicId: string;
-};
-
+}
 type TUpdateCategoryData = Partial<TCreateCategoryData>;
 
 /**
- * Create a new category (Admin)
+ * (অ্যাডমিন) নতুন ক্যাটাগরি তৈরি করে
  */
-const createCategoryInDB = async (categoryData: TCreateCategoryData): Promise<ICategory> => {
+const createCategoryInDB = async (
+  categoryData: TCreateCategoryData
+): Promise<ICategory> => {
   const newCategory = await Category.create(categoryData);
-  return newCategory.toJSON() as unknown as ICategory; // Type-safe cast
+  return newCategory.toJSON() as ICategory;
 };
 
 /**
- * Get all categories
+ * (পাবলিক) সব ক্যাটাগরি খোঁজে
  */
 const getAllCategoriesFromDB = async (): Promise<ICategory[]> => {
-  const categories = await Category.find().sort({ name: 1 }).lean();
-  return categories as unknown as ICategory[]; // Type-safe cast
+  // .lean() প্লেইন অবজেক্ট রিটার্ন করে
+  const categories = await Category.find().sort({ name: 1 }).lean<ICategory[]>(); // <-- Explicit Generic
+  
+  // ICategory এখন প্লেইন অবজেক্ট, তাই টাইপ কাস্ট সঠিক
+  return categories;
 };
 
 /**
- * Get single category by ID or slug
+ * (পাবলিক) একটি ক্যাটাগরি ID বা Slug দিয়ে খোঁজে
  */
-const getCategoryByIdOrSlugFromDB = async (identifier: string): Promise<ICategory | null> => {
+const getCategoryByIdOrSlugFromDB = async (
+  identifier: string
+): Promise<ICategory | null> => {
   const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier);
   const query = isObjectId ? { _id: identifier } : { slug: identifier };
-  const category = await Category.findOne(query).lean();
-  return category as unknown as ICategory | null; // Type-safe cast
+    
+  const category = await Category.findOne(query).lean<ICategory>(); // <-- Explicit Generic
+  return category;
 };
 
 /**
- * Update a category (Admin)
+ * (অ্যাডমিন) ক্যাটাগরি আপডেট করে
  */
-const updateCategoryInDB = async (categoryId: string, updateData: TUpdateCategoryData): Promise<ICategory> => {
+const updateCategoryInDB = async (
+  categoryId: string,
+  updateData: TUpdateCategoryData
+): Promise<ICategory | null> => {
   const updatedCategory = await Category.findByIdAndUpdate(
     categoryId,
     { $set: updateData },
     { new: true, runValidators: true }
-  ).lean();
-
-  if (!updatedCategory) throw new AppError(404, 'Category not found, update failed.');
-  return updatedCategory as unknown as ICategory; // Type-safe cast
+  ).lean<ICategory>(); // <-- Explicit Generic
+  
+  if (!updatedCategory) {
+     throw new AppError(404, 'Category not found, update failed.');
+  }
+  return updatedCategory;
 };
 
 /**
- * Delete a category (Admin)
+ * (অ্যাডমিন) ক্যাটাগরি ডিলিট করে
  */
-const deleteCategoryFromDB = async (categoryId: string): Promise<ICategory> => {
-  const categoryToDelete = await Category.findById(categoryId);
-  if (!categoryToDelete) throw new AppError(404, 'Category not found, delete failed.');
-
-  const publicId = categoryToDelete.imagePublicId;
-
-  // Delete DB entry
-  await categoryToDelete.deleteOne();
-
-  // Delete image from Cloudinary
-  if (publicId) {
-    try {
-      await cloudinary.uploader.destroy(publicId);
-    } catch (err) {
-      console.error('Cloudinary delete error (DB entry deleted anyway):', err);
+const deleteCategoryFromDB = async (
+  categoryId: string
+): Promise<ICategory | null> => {
+    const categoryToDelete = await Category.findById(categoryId);
+    
+    if (!categoryToDelete) {
+         throw new AppError(404, 'Category not found, delete failed.');
     }
-  }
 
-  return categoryToDelete.toJSON() as unknown as ICategory; // Type-safe cast
+    const publicId = categoryToDelete.imagePublicId;
+    
+    await categoryToDelete.deleteOne();
+    
+    if (publicId) {
+        try {
+            console.log(`Deleting image from Cloudinary: ${publicId}`);
+            await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+            console.error("Cloudinary delete error (DB entry deleted anyway):", err);
+        }
+    }
+    
+    return categoryToDelete.toJSON() as ICategory;
 };
 
 export const CategoryService = {
