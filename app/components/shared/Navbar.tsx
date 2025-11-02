@@ -1,20 +1,20 @@
 // app/components/shared/Navbar.tsx
-'use client'; // Required for useState, event handlers, framer-motion
+'use client';
 
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-import Image from 'next/image'; // <-- next/image ইম্পোর্ট করা হয়েছে
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Phone, Search, Truck, User, ShoppingCart, Home, List, Menu, X } from 'lucide-react';
-// === framer-motion ইম্পোর্ট ঠিক করা হয়েছে ===
-import { motion, AnimatePresence, type TargetAndTransition } from 'framer-motion';
+import { Phone, Search, Truck, User, ShoppingCart, Home, List } from 'lucide-react';
+import { motion, type TargetAndTransition } from 'framer-motion';
 import Marquee from "react-fast-marquee";
-import { Separator } from '@/components/ui/separator'; // <-- Separator ইম্পোর্ট করা হয়েছে
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/app/lib/utils';
+import { useSession, signOut } from "next-auth/react";
 
-// Page Links (for mobile menu primarily)
+// Page Links
 const pageLinks = [
   { name: 'Home', href: '/' },
   { name: 'All Products', href: '/products' },
@@ -23,7 +23,7 @@ const pageLinks = [
   { name: 'FAQ', href: '/faq' },
 ];
 
-// Category Links (for desktop nav and mobile)
+// Category Links
 const categoryLinks = [
   { name: 'Pitha', href: '/category/pitha' },
   { name: 'Achar', href: '/category/achar' },
@@ -35,22 +35,11 @@ const categoryLinks = [
   { name: 'Sweeteners & Dairy', href: '/category/sweeteners-dairy' },
 ];
 
-// ===================================
-// === অ্যানিমেশন ভেরিয়েন্ট (সংশোধিত) ===
-// ===================================
-// TargetAndTransition টাইপটি যোগ করা হয়েছে
-const iconHoverEffect: TargetAndTransition = {
-  scale: 1.15,
-  transition: { type: "spring", stiffness: 300 }
-};
+// Motion Effects
+const iconHoverEffect: TargetAndTransition = { scale: 1.15, transition: { type: "spring", stiffness: 300 } };
+const navLinkHoverEffect: TargetAndTransition = { y: -3, transition: { type: "spring", stiffness: 300 } };
 
-const navLinkHoverEffect: TargetAndTransition = {
-  y: -3,
-  transition: { type: "spring", stiffness: 300 }
-};
-// ===================================
-
-// Mobile bottom nav links
+// Mobile nav links
 const mobileNavLinks = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Shop', href: '/products', icon: List },
@@ -59,13 +48,14 @@ const mobileNavLinks = [
     { name: 'Search', href: '#', icon: Search },
 ];
 
-// Motion-enabled Next.js Image (MotionImage নামে নতুন কম্পোনেন্ট)
+// MotionImage
 const MotionImage = motion(Image);
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const cartItemCount = 0; // Placeholder for cart items
+  const cartItemCount = 0; // Placeholder
+  const { data: session } = useSession(); // ✅ session
 
   return (
     <>
@@ -97,15 +87,14 @@ const Navbar = () => {
           <div className="container mx-auto flex justify-between items-center px-4 gap-4">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              {/* === MotionImage (motion(Image)) ব্যবহার করা হয়েছে === */}
               <MotionImage
                 src="https://i.ibb.co/vxsq679p/Gemini-Generated-Image-deyncbdeyncbdeyn-removebg-preview.png"
                 alt="Porer Bazar BD"
-                className="h-14 w-auto" // w-auto যোগ করা হয়েছে
+                className="h-14 w-auto"
                 whileHover={{ scale: 1.05 }}
                 width={150}
                 height={56}
-                priority // <-- priority prop Next.js-এর Image কম্পোনেন্টে কাজ করে
+                priority
               />
             </Link>
 
@@ -119,19 +108,48 @@ const Navbar = () => {
 
             {/* Desktop Icons */}
             <div className="hidden md:flex items-center gap-4 md:gap-6">
-              {/* === motion.div-এ whileHover এখন কাজ করবে === */}
               <motion.div whileHover={iconHoverEffect}>
                 <Link href="/dashboard/orders" className="flex items-center gap-2 text-sm hover:text-green-600 transition-colors cursor-pointer">
                   <Truck size={20} />
                   <span className="hidden lg:block">Track Order</span>
                 </Link>
               </motion.div>
-              <motion.div whileHover={iconHoverEffect}>
-                <Link href="/login" className="flex items-center gap-2 text-sm hover:text-green-600 transition-colors cursor-pointer">
-                  <User size={20} />
-                  <span className="hidden lg:block">Login / Sign Up</span>
-                </Link>
-              </motion.div>
+
+              {/* Login / My Account */}
+              {session?.user ? (
+  <div className="flex items-center gap-4">
+    {/* Username */}
+    <motion.div
+      whileHover={{ scale: 1.05, color: "#FACC15" }} // আলাদা hover animation
+      className="flex items-center gap-1 cursor-pointer"
+    >
+      <User size={20} />
+      <span className="hidden lg:block">{session.user.name}</span>
+    </motion.div>
+
+    {/* Logout Button */}
+    <motion.button
+      whileHover={{ scale: 1.1, backgroundColor: "#F87171", color: "#fff" }} // আলাদা hover animation
+      onClick={() => signOut({ callbackUrl: "/" })}
+      className="px-2 py-1 text-xs text-red-600 rounded"
+    >
+      Logout
+    </motion.button>
+  </div>
+) : (
+  <motion.div
+    whileHover={{ scale: 1.05, color: "#4ADE80" }}
+    className="flex items-center gap-2 cursor-pointer"
+  >
+    <Link href="/login" className="flex items-center gap-2">
+      <User size={20} />
+      <span className="hidden lg:block">Login / Sign Up</span>
+    </Link>
+  </motion.div>
+)}
+
+
+              {/* Cart */}
               <motion.div whileHover={iconHoverEffect}>
                 <Link href="/cart" className="relative hover:text-green-600 transition-colors cursor-pointer">
                   <ShoppingCart size={24} />
@@ -150,7 +168,6 @@ const Navbar = () => {
         <nav className="bg-green-800 text-white py-3 hidden md:flex">
           <div className="container mx-auto flex justify-center items-center px-4">
             <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 md:gap-x-8">
-              {/* === motion.li-তে whileHover এখন কাজ করবে === */}
               <motion.li whileHover={navLinkHoverEffect}>
                 <Link href="/products" className={cn(
                     "font-medium hover:text-yellow-300 transition-colors text-sm md:text-base",
@@ -185,12 +202,34 @@ const Navbar = () => {
               return (
                 <button
                   key={link.name}
-                  onClick={() => alert('Search Clicked!')} // TODO: Implement Search Modal
+                  onClick={() => alert('Search Clicked!')}
                   className="flex flex-col items-center justify-center text-xs font-medium transition-colors w-full text-gray-500 hover:text-green-600"
                 >
                   <link.icon size={22} className="mb-0.5" />
                   <span>{link.name}</span>
                 </button>
+              );
+            }
+
+            if (link.name === 'Account') {
+              return session?.user ? (
+                <button
+                  key="mobile-account"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="flex flex-col items-center justify-center text-xs font-medium text-red-600 hover:text-red-700 w-full"
+                  >
+                  <User size={22} className="mb-0.5" />
+                  <span>Logout</span>
+                </button>
+              ) : (
+                <Link
+                  key="mobile-account-login"
+                  href="/login"
+                  className="flex flex-col items-center justify-center text-xs font-medium text-gray-500 hover:text-green-600 w-full"
+                >
+                  <User size={22} className="mb-0.5" />
+                  <span>Login</span>
+                </Link>
               );
             }
 
