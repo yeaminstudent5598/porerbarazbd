@@ -60,7 +60,7 @@ const StaticBannerGrid = () => {
     <section className="container mx-auto mt-10 mb-10 px-4 md:px-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* বাম পাশে স্লাইডার */}
-        <div className="lg:col-span-2 relative h-[300px] md:h-[400px] lg:h-[550px] overflow-hidden rounded-lg shadow-lg">
+        <div className="lg:col-span-2 relative rounded-lg shadow-lg">
           <Slider {...settings}>
             {bannerData.map((banner) => (
               <div key={banner.id} className="relative h-[300px] md:h-[400px] lg:h-[550px]">
