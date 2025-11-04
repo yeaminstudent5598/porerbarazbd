@@ -4,6 +4,7 @@ import { Poppins, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import { cn } from "./lib/utils";
 import Providers from "./components/Providers";
+import { AuthProvider } from "./lib/context/AuthContext";
 // TODO: Import Providers (Auth, Cart, Theme, QueryClient etc.)
 
 const poppins = Poppins({
@@ -45,7 +46,7 @@ export default function RootLayout({
             <AuthProvider>
               <CartProvider>
         */}
-                <Providers>{children}</Providers>
+               <AuthProvider> <Providers>{children}</Providers> </AuthProvider> 
         {/*
               </CartProvider>
             </AuthProvider>
