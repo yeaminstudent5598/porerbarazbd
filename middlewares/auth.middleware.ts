@@ -1,11 +1,14 @@
+// D:\yeamin student\PorerBazarBD Project\porerbazarbd-nextjs\middlewares\auth.middleware.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { UserService } from '@/modules/user/user.service';
 import AppError from '@/app/lib/utils/AppError';
-import { verifyToken } from '@/app/lib/authUtils';
+// import { verifyToken } from '@/app/lib/authUtils'; // <-- ১. এই লাইনটি ডিলিট করুন
+import { verifyJwtToken } from '@/app/lib/jwt'; // <-- ২. এই লাইনটি যোগ করুন
 
 type Role = 'user' | 'admin';
 
-// === AuthenticatedRequest টাইপ ===
+// ... (AuthenticatedRequest interface অপরিবর্তিত)
 export interface AuthenticatedRequest extends NextRequest {
   user: {
     userId: string;
@@ -27,13 +30,17 @@ export const authGuard = (...allowedRoles: Role[]): AuthMiddleware => {
         throw new AppError(401, 'Authentication failed. No token provided.');
       }
 
-      const decoded = verifyToken(token);
+      // const decoded = verifyToken(token); // <-- ৩. এই লাইনটি ডিলিট করুন
+      
+      // <-- ৪. এই লাইনটি যোগ করুন (এবং টাইপ দিন)
+      const decoded = verifyJwtToken(token) as { userId: string; role: string } | null;
 
-      // ✅ null চেক করা হয়েছে
+      // ✅ null চেক করা হয়েছে
       if (!decoded) {
         throw new AppError(401, 'Invalid or expired token.');
       }
 
+      // ... (বাকি কোড অপরিবর্তিত)
       const user = await UserService.findUserById(decoded.userId);
       if (!user) {
         throw new AppError(404, 'User associated with this token no longer exists.');
