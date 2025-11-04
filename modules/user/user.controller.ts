@@ -6,6 +6,7 @@ import AppError from '@/app/lib/utils/AppError';
 import sendResponse from '@/app/lib/sendResponse';
 import { createToken } from '@/app/lib/authUtils';
 import { AuthenticatedRequest } from '@/middlewares/auth.middleware';
+import { signJwtToken } from '@/app/lib/jwt';
 
 // POST /api/auth/register
 export const registerUserController = async (req: NextRequest) => {
@@ -19,7 +20,6 @@ export const registerUserController = async (req: NextRequest) => {
   return sendResponse(201, 'User registered successfully', newUser);
 };
 
-// POST /api/auth/login
 export const loginUserController = async (req: NextRequest) => {
   const body = await req.json();
 
@@ -33,7 +33,8 @@ export const loginUserController = async (req: NextRequest) => {
   }
 
   const jwtPayload = { userId: user._id.toString(), role: user.role };
-  const accessToken = createToken(jwtPayload);
+  // const accessToken = createToken(jwtPayload); // <-- ৩. এই লাইনটি ডিলিট করুন
+  const accessToken = signJwtToken(jwtPayload); // <-- ৪. এই লাইনটি যোগ করুন
 
   return sendResponse(200, 'User logged in successfully', {
     user: user.toJSON(),
