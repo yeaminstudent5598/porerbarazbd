@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { UserService } from "@/modules/user/user.service";
 import User from "@/modules/user/user.model";
 import dbConnect from "@/app/lib/dbConnect";
+import { signJwtToken } from "@/app/lib/jwt"; // <-- ১. আপনার কাস্টম JWT সাইনার ইম্পোর্ট করুন
 
 const handler = NextAuth({
   providers: [
@@ -19,26 +20,54 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
-        const user = await UserService.findUserByEmailWithPassword(credentials.email);
+        
+        await dbConnect(); // <-- ২. ডিবি কানেক্ট এখানেও কল করা ভালো
+        
+        const user = await UserService.findUserByEmailWithPassword(
+          credentials.email
+        );
         if (!user) return null;
+        
         const isValid = await user.comparePassword(credentials.password);
         if (!isValid) return null;
 
-        return { id: user._id.toString(), name: user.name, email: user.email };
+        // <-- ৩. authorize থেকে role সহ পুরো ইউজার অবজেক্ট রিটার্ন করুন
+        // (নিশ্চিত করুন আপনার User মডেলে 'role' আছে)
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role, // <-- role এখানে থাকা জরুরি
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // 'user' অবজেক্টটি শুধু প্রথমবার লগইনের সময় পাওয়া যায়
       if (user) {
         token.id = user.id;
+        token.role = (user as any).role; // <-- ৪. টোকেনে role যোগ করুন
       }
+
+      // <-- ৫. আপনার কাস্টম অ্যাক্সেস টোকেন তৈরি করুন (মিডলওয়্যারের জন্য)
+      const tokenData = {
+        userId: token.id as string,
+        role: token.role as string,
+      };
+      
+      // app/lib/jwt.ts এর ফাংশন দিয়ে সাইন করা হচ্ছে
+      token.customAccessToken = signJwtToken(tokenData);
+      
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
-        session.accessToken = token.accessToken as string | undefined;
+        session.user.role = token.role as string; // <-- ৬. সেশনে role যোগ করুন
+        
+        // <-- ৭. কাস্টম টোকেনটি সেশনে যোগ করুন (ফ্রন্টএন্ডে ব্যবহারের জন্য)
+        session.accessToken = token.customAccessToken as string;
       }
       return session;
     },
@@ -50,7 +79,8 @@ const handler = NextAuth({
           await User.create({
             name: user.name,
             email: user.email,
-            password: "google_oauth_dummy",
+            password: "google_oauth_dummy", 
+            // এখানেও role: 'user' সেট করে দেওয়া ভালো
           });
         }
       }
