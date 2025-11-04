@@ -31,36 +31,37 @@ const createProductInDB = async (productData: TCreateProductData): Promise<IProd
   return newProduct.toJSON() as unknown as IProduct; // Type-safe cast
 };
 
-const getAllProductsFromDB = async (
-  query: TProductQuery
-): Promise<{ data: IProduct[]; total: number; page: number; limit: number }> => {
+export const getAllProductsFromDB = async (query: TProductQuery) => {
   const filter: any = {};
+
+  // 🔍 Search functionality
   if (query.searchTerm) {
     filter.$or = [
-      { name: { $regex: query.searchTerm, $options: 'i' } },
-      { description: { $regex: query.searchTerm, $options: 'i' } },
+      { name: { $regex: query.searchTerm, $options: "i" } },
+      { description: { $regex: query.searchTerm, $options: "i" } },
     ];
   }
-  if (query.category) filter.category = query.category;
-  filter.status = query.status || 'Active';
 
+  if (query.category) filter.category = query.category;
+
+  // ✅ FIXED: Show all statuses by default (remove hardcoded "Active")
+  if (query.status) filter.status = query.status;
+
+  // Sorting
   const sort: any = {};
-  if (query.sortBy) sort[query.sortBy] = query.sortOrder === 'desc' ? -1 : 1;
+  if (query.sortBy) sort[query.sortBy] = query.sortOrder === "desc" ? -1 : 1;
   else sort.createdAt = -1;
 
+  // Pagination
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 12;
   const skip = (page - 1) * limit;
 
+  // Query
   const products = await Product.find(filter).sort(sort).skip(skip).limit(limit).lean();
   const total = await Product.countDocuments(filter);
 
-  return {
-    data: products as unknown as IProduct[],
-    total,
-    page,
-    limit,
-  };
+  return { data: products, total, page, limit };
 };
 
 const getAllAdminProductsFromDB = async (
