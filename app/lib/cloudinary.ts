@@ -1,24 +1,22 @@
 // lib/cloudinary.ts
 import { v2 as cloudinary } from 'cloudinary';
+import config from './config'; // lib/config.ts থেকে
 
-// .env.local ফাইল থেকে ভেরিয়েবল লোড করার জন্য
-// (Next.js নিজে থেকেই .env.local লোড করে)
-const cloudinaryConfig = cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true, // Use HTTPS
+cloudinary.config({
+  cloud_name: config.cloudinary_cloud_name,
+  api_key: config.cloudinary_api_key,
+  api_secret: config.cloudinary_api_secret,
+  secure: true,
 });
 
-// Cloudinary আপলোড ফাংশন
 /**
  * Uploads an image buffer to Cloudinary
  * @param buffer The image buffer
- * @returns Promise resolving to Cloudinary upload result
+ * @returns Promise resolving to Cloudinary upload result (any type)
  */
 export const uploadToCloudinary = (
   buffer: Buffer,
-  folder: string = process.env.CLOUDINARY_FOLDER || 'porerbazarbd'
+  folder: string = config.cloudinary_folder || 'porerbazarbd'
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
