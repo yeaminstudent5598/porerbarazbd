@@ -7,7 +7,7 @@ const ProductStatusEnum = z.enum(['Active', 'Draft', 'Out of Stock']);
 const productFormSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  
+  discount: z.string().optional().or(z.literal('')),
   // coerce.number() FormData থেকে আসা 'string' কে 'number'-এ কনভার্ট করবে
   price: z.coerce.number().positive('Price must be a positive number'),
   oldPrice: z.coerce
