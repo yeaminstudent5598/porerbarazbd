@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "./lib/utils";
 import Providers from "./components/Providers";
 import { AuthProvider } from "./lib/context/AuthContext";
+import { ToastProvider } from "@/components/ui/toast";
 // TODO: Import Providers (Auth, Cart, Theme, QueryClient etc.)
 
 const poppins = Poppins({
@@ -45,8 +46,8 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
               <CartProvider>
-        */}
-               <AuthProvider> <Providers>{children}</Providers> </AuthProvider> 
+        */} <ToastProvider><AuthProvider> <Providers>{children}</Providers> </AuthProvider> </ToastProvider>
+               
         {/*
               </CartProvider>
             </AuthProvider>
