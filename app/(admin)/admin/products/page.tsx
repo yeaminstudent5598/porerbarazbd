@@ -52,7 +52,7 @@ import useSWR from 'swr';
 import { IProduct } from '@/modules/product/product.interface';
 import { fetcher } from '@/app/lib/fetcher';
 
-// ✅ Response type
+// Response type
 interface ApiResponse {
   success: boolean;
   message: string;
@@ -60,7 +60,7 @@ interface ApiResponse {
   meta: { total: number; page: number; limit: number };
 }
 
-// ✅ Status badge helper
+//  Status badge helper
 const getStatusBadge = (status: IProduct['status']) => {
   switch (status) {
     case 'Active':
