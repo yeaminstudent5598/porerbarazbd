@@ -22,6 +22,14 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.stockcake.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pin.it', // <-- Pinterest URL Shortener
+      },
       // ... অন্যান্য ডোমেইন ...
     ],
   },
