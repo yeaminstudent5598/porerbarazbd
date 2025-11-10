@@ -13,6 +13,7 @@ export interface IProduct {
   imageUrl: string;
   imagePublicId?: string; // Cloudinary ডিলিটের জন্য (আগের কোড অনুযায়ী)
   status: 'Active' | 'Draft' | 'Out of Stock';
+  discount?: string;
   rating?: number;
   reviewsCount?: number;
   weight?: string;
