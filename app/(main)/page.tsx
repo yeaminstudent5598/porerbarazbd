@@ -9,6 +9,7 @@ import OurProcess from '../components/home/process/OurProcess';
 import Testimonials from '../components/home/testimonials/Testimonials';
 import BannerSlider from '../components/home/BannerSlider';
 import HomeBanners from '../components/home/BannerSlider';
+import StoryCategories from '../components/home/StoryCategories';
 
 
 // This is likely a Server Component by default in App Router
@@ -21,6 +22,7 @@ export default function HomePage() {
       <HomeBanners/>
       <CategoryShop />
       <WhyChooseUs />
+      <StoryCategories/>
       <Bestsellers />
       <Deals /> {/* This might be your "All Products" section for the homepage */}
       <OurProcess />
