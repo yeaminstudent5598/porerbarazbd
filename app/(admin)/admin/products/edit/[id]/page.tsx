@@ -1,8 +1,8 @@
 // app/(admin)/admin/products/edit/[id]/page.tsx
-'use client'; // Required for hooks and event handlers
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter, notFound } from 'next/navigation'; // Next.js hooks
+import { useParams, useRouter, notFound } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,132 +22,128 @@ import {
   CardDescription
 } from "@/components/ui/card";
 import { ArrowLeft, Save, Upload, Image as ImageIcon, Loader2, AlertTriangle } from 'lucide-react';
+import useSWR from 'swr'; // <-- SWR ইম্পোর্ট
+import { IProduct } from '@/modules/product/product.interface'; // <-- Product ইন্টারফেস
+import { useAuth } from '@/app/lib/context/AuthContext';
+import { fetcher } from '@/app/lib/fetcher';
 import { cn } from '@/app/lib/utils';
 
-// --- Type Definitions (Ensure consistency) ---
+// API রেসপন্সের টাইপ
+interface ApiProductResponse {
+  success: boolean;
+  message: string;
+  data: IProduct;
+}
+
 type ProductStatus = 'Active' | 'Draft' | 'Archived' | 'Out of Stock';
-interface Product {
-    id: number | string;
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    category: string;
-    status: ProductStatus;
-    imageUrl: string;
-    oldPrice?: number;
-    discount?: string;
-    weight?: string;
-    ingredients?: string; // Comma-separated
-}
-// Form state can use strings for inputs
+
+// Form state interface
 interface ProductFormState {
-    name: string;
-    description: string;
-    price: string;
-    stock: string;
-    category: string;
-    status: ProductStatus;
-    oldPrice?: string;
-    discount?: string;
-    weight?: string;
-    ingredients?: string;
+  name: string;
+  description: string;
+  price: string;
+  stock: string;
+  category: string;
+  status: ProductStatus;
+  oldPrice?: string;
+  discount?: string;
+  weight?: string;
+  ingredients?: string;
 }
-// --- End Type Definitions ---
 
-// === Demo Data (Must match data from ManageProductsPage) ===
-// TODO: Replace with actual API call
-const demoProducts: Product[] = [
-  { id: 1, name: "কালোজিরা আচার", price: 890, stock: 50, status: "Active", category: "Achar", imageUrl: "https://efoodis.com/public/uploads/product/1756417513-%E0%A6%95%E0%A6%BE%E0%A6%B2%E0%A7%8B%E0%A6%9C%E0%A6%BF%E0%A6%B0%E0%A6%BE-%E0%A6%AE%E0%A6%BF%E0%A6%95%E0%A7%8D%E0%A6%B8-%E0%A6%86%E0%A6%9A%E0%A6%BE%E0%A6%B0.jpg", description: "সম্পূর্ণ ঘরোয়া পরিবেশে তৈরি...", oldPrice: 1250, discount: "29%", weight: "500gm", ingredients: "কালোজিরা, রসুন, সরিষার তেল" },
-  { id: 5, name: "ঝিনুক পিঠা", price: 590, stock: 0, status: "Out of Stock", category: "Pitha", imageUrl: "https://efoodis.com/public/uploads/product/1756499233-jhinuk-pitha.jpg", description: "চিনির সিরায় ডোবানো...", oldPrice: 850, discount: "31%", weight: "1kg", ingredients: "ময়দা, চিনি, তেল" },
-  { id: 7, name: "১.৫ লিটার কম্বো", price: 1250, stock: 20, status: "Active", category: "Oil", imageUrl: "https://efoodis.com/public/uploads/product/1758059095-combo-web-efoodis.jpg", description: "স্পেশাল কম্বো অফার...", oldPrice: 1800, discount: "31%", weight: "1.5L", ingredients: "সরিষা, কালিজিরা" },
-  { id: 2, name: "ঝুড়ি পিঠা", price: 790, stock: 30, status: "Draft", category: "Pitha", imageUrl: "https://efoodis.com/public/uploads/product/1754690259-juri.webp", description: "মুচমুচে ঝুড়ি পিঠা...", oldPrice: 850, discount: "7%", weight: "1kg", ingredients: "চালের গুঁড়া" },
-];
-
-// Mock fetch function
-const fetchProductById = async (id: string): Promise<Product | null> => {
-    console.log(`Fetching product with ID: ${id}`);
-    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-    const numericId = Number(id);
-    const product = demoProducts.find(p => p.id === numericId);
-    return product || null;
-};
-// =============================================================
+// --- ডেমো ডেটা এবং fetchProductById ফাংশন ডিলিট করা হয়েছে ---
 
 export default function EditProductPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string; // Get product ID from URL
+  const id = params.id as string; // URL থেকে প্রডাক্ট ID
+  const { token, isLoading: isAuthLoading } = useAuth(); // Auth Context
 
-  const [productData, setProductData] = useState<ProductFormState | null>(null);
+  // === SWR দিয়ে আসল ডেটা ফেচিং ===
+  // অ্যাডমিন রুট ব্যবহার করা হয়েছে, যা Draft প্রোডাক্টও আনতে পারে
+  const apiUrl = token && id ? [`/api/admin/products/${id}`, token] : null;
+  
+  const { 
+    data: apiResponse, 
+    error: swrError, 
+    isLoading: isSWRLoading, 
+    mutate // SWR ক্যাশে রিফ্রেশ করার জন্য
+  } = useSWR<ApiProductResponse>(apiUrl, fetcher);
+  
+  const product = apiResponse?.data; // ফেচ করা প্রোডাক্ট
+  // ==================================
+
+  // Partial ব্যবহার করা হয়েছে কারণ state শুরুতে খালি থাকতে পারে
+  const [productData, setProductData] = useState<Partial<ProductFormState>>({});
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null); // ফর্ম এরর স্টেট
 
+  // SWR দিয়ে ডেটা লোড হলে ফর্ম স্টেট সেট করুন
   useEffect(() => {
-    if (!id) {
-        setIsLoading(false);
-        notFound(); // If no ID, show 404
-        return;
-    }
-
-    setIsLoading(true);
-    fetchProductById(id)
-      .then(data => {
-        if (!data) {
-          notFound(); // If product not found, show 404
-        } else {
-          // Populate form state from fetched data
-          setProductData({
-            name: data.name,
-            description: data.description,
-            price: String(data.price), // Convert number to string for input
-            stock: String(data.stock),
-            category: data.category,
-            status: data.status,
-            oldPrice: String(data.oldPrice || ''), // Handle optional
-            discount: data.discount || '',
-            weight: data.weight || '',
-            ingredients: data.ingredients || '',
-          });
-          setImagePreview(data.imageUrl); // Set initial image preview
-        }
-      })
-      .catch(error => {
-        console.error("Failed to fetch product:", error);
-        // Show error state (optional)
-      })
-      .finally(() => {
-        setIsLoading(false);
+    if (product) {
+      setProductData({
+        name: product.name,
+        description: product.description,
+        price: String(product.price),
+        stock: String(product.stock),
+        category: product.category,
+        status: product.status,
+        oldPrice: String(product.oldPrice || ''),
+        discount: product.discount || '',
+        weight: product.weight || '',
+        ingredients: product.ingredients?.join(', ') || '', // অ্যারে-কে স্ট্রিং-এ রূপান্তর
       });
-  }, [id]); // Re-fetch if ID changes
+      setImagePreview(product.imageUrl);
+    }
+  }, [product]); // product ডেটা পরিবর্তন হলে এই ইফেক্ট রান হবে
 
   // Form Submit Handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!productData) return;
+    if (!productData || !token) {
+        setFormError("Authorization failed or form data missing.");
+        return;
+    }
     setIsUpdating(true);
+    setFormError(null);
 
-    // TODO: Implement actual API call here
-    // 1. If imageFile exists, upload it first and get the new URL
-    // 2. Send productData (with new imageUrl if changed) to your API endpoint
-    //    e.g., await fetch(`/api/products/${id}`, { method: 'PUT', ... })
+    // ১. FormData তৈরি করা
+    const formData = new FormData(e.currentTarget);
+    // imageFile state-এ থাকলেই শুধু নতুন ছবি যোগ করুন
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+    
+    // `productData` state থেকে সব ভ্যালু FormData-তে সেট করুন
+    Object.entries(productData).forEach(([key, value]) => {
+        if (value !== undefined) {
+             formData.set(key, value as string);
+        }
+    });
 
     try {
-      console.log("Updating product:", id, productData);
-      console.log("New image (if any):", imageFile?.name);
-      
-      // --- Simulate API call ---
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // --- End Simulation ---
+      // ২. API কল (PUT /api/products/[id])
+      const response = await fetch(`/api/products/${id}`, { // <-- PUT রুট কল
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData, // TODO: আপনার PUT রুটকে FormData হ্যান্ডেল করতে হবে
+      });
+
+      const result = await response.json();
+      if (!response.ok) { throw new Error(result.message || 'Failed to update product'); }
 
       alert("Product Updated Successfully!");
-      router.push('/admin/products'); // Navigate back to product list
+      mutate(); // SWR ক্যাশে রিফ্রেশ করুন
+      router.push('/admin/products');
+      router.refresh();
 
     } catch (error: any) {
       console.error("Failed to update product:", error);
-      alert(`Error: ${error.message || 'Could not update product.'}`);
+      setFormError(error.message || 'Could not update product.');
     } finally {
       setIsUpdating(false);
     }
@@ -156,25 +152,26 @@ export default function EditProductPage() {
   // Input change handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setProductData(prev => prev ? { ...prev, [name]: value } : null);
+    setProductData(prev => ({ ...prev, [name]: value })); // null চেক বাদ
   };
 
   // Select change handler
   const handleSelectChange = (name: keyof ProductFormState) => (value: string) => {
-     setProductData(prev => prev ? { ...prev, [name]: value as ProductStatus } : null); // Cast value
+     setProductData(prev => ({ ...prev, [name]: value as ProductFormState['status'] | ProductFormState['category'] })); // null চেক বাদ
   }
 
   // Image change handler
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file); // Store the new file
-      // Create a local URL for instant preview
+      setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   // --- Render Logic ---
+  const isLoading = isAuthLoading || isSWRLoading;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-10 text-muted-foreground">
@@ -184,8 +181,24 @@ export default function EditProductPage() {
     );
   }
 
-  if (!productData) {
+  // SWR বা Auth এরর
+  if (swrError) {
      return (
+        <div className="p-6 text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-destructive" />
+            <h2 className="mt-4 text-2xl font-semibold text-destructive">Error Loading Product</h2>
+            <p className="mt-2 text-red-600 mb-4">{swrError.message}</p>
+            <Button variant="outline" onClick={() => router.push('/admin/products')}>
+                <ArrowLeft size={16} className="mr-2" /> Back to Products
+            </Button>
+        </div>
+     );
+  }
+  
+  // প্রোডাক্ট লোড হয়েছে কিন্তু ডেটা নেই (404 from API)
+  // অথবা ফর্ম স্টেট এখনও পপুলেট হয়নি
+  if (!product || !productData.name) {
+       return (
         <div className="p-6 text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-destructive" />
             <h2 className="mt-4 text-2xl font-semibold text-destructive">Product Not Found</h2>
@@ -196,7 +209,6 @@ export default function EditProductPage() {
         </div>
      );
   }
-  // If we reach here, 'productData' is available
 
   return (
     <div className="flex flex-col gap-6">
@@ -207,7 +219,7 @@ export default function EditProductPage() {
             Edit Product
           </h2>
           <p className="text-gray-600 text-sm">
-            Updating: <span className="font-medium text-black">{productData.name}</span> (ID: {id})
+            Updating: <span className="font-medium text-black">{productData.name}</span>
           </p>
         </div>
         <Button variant="outline" onClick={() => router.back()} disabled={isUpdating}>
@@ -217,8 +229,13 @@ export default function EditProductPage() {
 
       {/* Edit Form */}
       <form onSubmit={handleSubmit}>
+         {formError && (
+            <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-md mb-4 text-sm">
+                <p className="font-semibold">Error:</p>
+                <p>{formError}</p>
+            </div>
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
           {/* Column 1: Details, Pricing (Sticky) */}
           <div className="lg:col-span-2 space-y-6 lg:sticky lg:top-24">
             <Card>
@@ -226,21 +243,20 @@ export default function EditProductPage() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="name">Product Name <span className="text-red-500">*</span></Label>
-                  <Input id="name" name="name" value={productData.name} onChange={handleChange} required disabled={isUpdating} />
+                  <Input id="name" name="name" value={productData.name || ''} onChange={handleChange} required disabled={isUpdating} />
                 </div>
                 <div>
                   <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" name="description" value={productData.description} onChange={handleChange} rows={5} disabled={isUpdating} />
+                  <Textarea id="description" name="description" value={productData.description || ''} onChange={handleChange} rows={5} disabled={isUpdating} />
                 </div>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader> <CardTitle>Pricing & Inventory</CardTitle> </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="price">Price (৳) <span className="text-red-500">*</span></Label>
-                  <Input id="price" name="price" type="number" value={productData.price} onChange={handleChange} required min="0" step="0.01" disabled={isUpdating}/>
+                  <Input id="price" name="price" type="number" value={productData.price || ''} onChange={handleChange} required min="0" step="0.01" disabled={isUpdating}/>
                 </div>
                  <div>
                   <Label htmlFor="oldPrice">Old Price (৳)</Label>
@@ -248,24 +264,23 @@ export default function EditProductPage() {
                 </div>
                 <div>
                   <Label htmlFor="stock">Stock Quantity <span className="text-red-500">*</span></Label>
-                  <Input id="stock" name="stock" type="number" value={productData.stock} onChange={handleChange} required min="0" step="1" disabled={isUpdating}/>
+                  <Input id="stock" name="stock" type="number" value={productData.stock || ''} onChange={handleChange} required min="0" step="1" disabled={isUpdating}/>
                 </div>
                  <div>
                   <Label htmlFor="discount">Discount Text</Label>
                   <Input id="discount" name="discount" value={productData.discount || ''} onChange={handleChange} placeholder="e.g., 15% Off" disabled={isUpdating}/>
-                </div>
+                 </div>
                  <div>
                   <Label htmlFor="weight">Weight</Label>
                   <Input id="weight" name="weight" value={productData.weight || ''} onChange={handleChange} placeholder="e.g., 500gm, 1kg" disabled={isUpdating}/>
                 </div>
                  <div>
-                  <Label htmlFor="ingredients">Ingredients</Label>
-                  <Input id="ingredients" name="ingredients" value={productData.ingredients || ''} onChange={handleChange} placeholder="Comma separated..." disabled={isUpdating}/>
+                  <Label htmlFor="ingredients">Ingredients (Comma separated)</Label>
+                  <Input id="ingredients" name="ingredients" value={productData.ingredients || ''} onChange={handleChange} placeholder="সরিষা, মশলা..." disabled={isUpdating}/>
                 </div>
               </CardContent>
             </Card>
           </div>
-
           {/* Column 2: Status, Category, Image (Sticky) */}
           <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
             <Card>
@@ -301,14 +316,12 @@ export default function EditProductPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>Product Image</CardTitle>
                 <CardDescription>Upload to change image.</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center space-y-4">
-                {/* Image Preview */}
                 <div className="w-full aspect-square border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center bg-gray-50 overflow-hidden">
                   {imagePreview ? (
                     <img src={imagePreview} alt="Product preview" className="max-h-full max-w-full object-contain" />
@@ -319,10 +332,9 @@ export default function EditProductPage() {
                     </div>
                   )}
                 </div>
-                {/* Upload Trigger */}
-                <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} className="hidden" disabled={isUpdating} />
+                <Input id="image" name="image" type="file" accept="image/*" onChange={handleImageChange} className="hidden" disabled={isUpdating} />
                 <Label
-                  htmlFor="picture"
+                  htmlFor="image"
                   className={cn(
                     "cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
