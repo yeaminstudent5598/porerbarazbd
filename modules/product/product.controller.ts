@@ -86,3 +86,12 @@ export const deleteProductController = async (req: AuthenticatedRequest, { param
     await ProductService.deleteProductFromDB(id);
     return sendResponse( 200, 'Product deleted successfully', null );
 };
+
+export const getAdminSingleProductController = async (req: AuthenticatedRequest, { params }: { params: { id: string } }) => {
+  const { id } = params;
+  const product = await ProductService.getAdminProductByIdFromDB(id); 
+  if (!product) {
+    throw new AppError(404, 'Product not found');
+  }
+  return sendResponse(200, 'Admin: Product retrieved successfully', product);
+};
