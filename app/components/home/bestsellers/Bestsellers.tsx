@@ -8,12 +8,12 @@ import { ProductCard } from '../../shared/ProductCard';
 // Demo Data (replace with actual bestsellers)
 const bestsellers = [
   // TODO: Add your actual bestseller product data here
-  { id: 1, name: "ঝাল কালোজিরা আচার", imageUrl: "https://efoodis.com/public/uploads/product/1756417513-%E0%A6%95%E0%A6%BE%E0%A6%B2%E0%A7%8B%E0%A6%9C%E0%A6%BF%E0%A6%B0%E0%A6%BE-%E0%A6%AE%E0%A6%BF%E0%A6%95%E0%A7%8D%E0%A6%B8-%E0%A6%86%E0%A6%9A%E0%A6%BE%E0%A6%B0.jpg", newPrice: 890, oldPrice: 1250, discount: "29%", category: "Achar" },
-  { id: 9, name: "গোজাপ ফুল পিঠা", imageUrl: "https://efoodis.com/public/uploads/product/1754854824-gulap-ful-pitha.webp", newPrice: 590, oldPrice: 750, discount: "21%", category: "Pitha" },
-  { id: 5, name: "ঝিনুক পিঠা", imageUrl: "https://efoodis.com/public/uploads/product/1756499233-jhinuk-pitha.jpg", newPrice: 590, oldPrice: 850, discount: "31%", category: "Pitha" },
-  { id: 7, name: "১.৫ লিটার কম্বো", imageUrl: "https://efoodis.com/public/uploads/product/1758059095-combo-web-efoodis.jpg", newPrice: 1250, oldPrice: 1800, discount: "31%", category: "Oil" },
-  { id: 2, name: "ঝুড়ি পিঠা", imageUrl: "https://efoodis.com/public/uploads/product/1754690259-juri.webp", newPrice: 790, oldPrice: 850, discount: "7%", category: "Pitha" },
-  { id: 11, name: "ছোট নকশি পিঠা", imageUrl: "https://efoodis.com/public/uploads/product/1758020593-suta-nokshi-pitha.png", newPrice: 690, oldPrice: 850, discount: "19%", category: "Pitha" },
+  { id: 1, name: "ঝাল কালোজিরা আচার", imageUrl: "/Images/p1.jpeg", newPrice: 890, oldPrice: 1250, discount: "29%", category: "Achar" },
+  { id: 9, name: "গোজাপ ফুল পিঠা", imageUrl: "/Images/p2.jpeg", newPrice: 590, oldPrice: 750, discount: "21%", category: "Pitha" },
+  { id: 5, name: "ঝিনুক পিঠা", imageUrl: "/Images/p3.jpeg", newPrice: 590, oldPrice: 850, discount: "31%", category: "Pitha" },
+  { id: 7, name: "১.৫ লিটার কম্বো", imageUrl: "/Images/p4.jpeg", newPrice: 1250, oldPrice: 1800, discount: "31%", category: "Oil" },
+  { id: 2, name: "ঝুড়ি পিঠা", imageUrl: "/Images/p5.jpeg", newPrice: 790, oldPrice: 850, discount: "7%", category: "Pitha" },
+  { id: 11, name: "ছোট নকশি পিঠা", imageUrl: "/Images/p6.jpeg", newPrice: 690, oldPrice: 850, discount: "19%", category: "Pitha" },
 ];
 
 
