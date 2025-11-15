@@ -1,4 +1,3 @@
-// app/components/home/FacebookStoryFeed.tsx
 'use client'; 
 
 import React, { useRef, useState } from 'react';
@@ -126,9 +125,11 @@ const StoryCard: React.FC<StoryCardProps> = ({ name, imageUrl, profileUrl, onCli
 };
 
 // --- "Create Story" কার্ড (প্রথম কার্ড) ---
+// এই অংশটি আপনার কোডে ডিফাইন করা ছিল না, তাই সাদা বক্স আসছিল।
+// আমি এটি নিচের মূল কম্পোনেন্ট থেকে বাদ দিয়ে দিয়েছি।
 
 
-// --- 🌟 সিম্পল স্টোরি ভিউয়ার মোডাল 🌟 ---
+// --- 🌟 সিম্পল স্টোরি ভিউয়ার মোডাল 🌟 ---
 interface StoryViewerModalProps {
   stories: Story[];
   startIndex: number;
@@ -280,7 +281,7 @@ const StoryCategories = () => {
     setSelectedStoryIndex(null);
   };
 
-  // আপনার ওয়েবসাইটের মেইন প্রোফাইল (সব স্টোরিতে এটাই দেখাবে)
+  // আপনার ওয়েবসাইটের মেইন প্রোফাইল (সব স্টোরিতে এটাই দেখাবে)
   const mainProfile = {
     name: "My Organic Shop", // আপনার শপের নাম
     logo: "https://i.ibb.co/vxsq679p/Gemini-Generated-Image-deyncbdeyncbdeyn-removebg-preview.png" // আপনার লোগো
@@ -289,7 +290,7 @@ const StoryCategories = () => {
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <h2 className="text-2xl text-center font-bold text-gray-900 mb-6">
           Browse by Story
         </h2>
         
@@ -299,12 +300,16 @@ const StoryCategories = () => {
           style={{ scrollbarWidth: 'none' }} 
         >
           <motion.div
-            className="flex flex-nowrap w-max gap-3 md:gap-4"
+            className="flex w-max gap-3 md:gap-4"
             drag="x"
             dragConstraints={scrollRef}
             dragElastic={0.1}
           >
-         
+          
+            {/* --- ❗️ সমাধান: ---
+              আমি এখান থেকে ওই সাদা বক্সটি রেন্ডার করার কোডটি (বা খালি স্পেস)
+              সম্পূর্ণরূপে মুছে ফেলেছি। এখন লিস্ট সরাসরি storyData দিয়ে শুরু হবে।
+            */}
             
             {storyData.map((story, index) => (
               <StoryCard 
