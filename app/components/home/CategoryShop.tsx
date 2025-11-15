@@ -7,13 +7,13 @@ import Link from 'next/link';
 
 // === Category Data ===
 const categoriesDesktop = [
-  { name: "Nuts & Dates", href: "/category/nuts-dates", imageUrl: "https://efoodis.com/public/uploads/category/1736429753-screenshot_2.webp" },
-  { name: "Organic Spices", href: "/category/organic-spices", imageUrl: "https://efoodis.com/public/uploads/category/1736429674-images.webp" },
-  { name: "Organic Oil", href: "/category/organic-oil", imageUrl: "https://efoodis.com/public/uploads/category/1736429963-organic.webp" },
-  { name: "Rice, Pulse", href: "/category/rice-pulse", imageUrl: "https://efoodis.com/public/uploads/category/1736430207-rice.webp" },
-  { name: "Super Foods", href: "/category/super-foods", imageUrl: "https://efoodis.com/public/uploads/category/1736430103-dal.webp" },
-  { name: "Sweeteners & Dairy", href: "/category/sweeteners-dairy", imageUrl: "https://efoodis.com/public/uploads/category/1736430546-swee.webp" },
-  { name: "Pitha", href: "/category/pitha", imageUrl: "https://efoodis.com/public/uploads/category/1736429456-ghee-concept-shot.webp" }
+  { name: "Nuts & Dates", href: "/category/nuts-dates", imageUrl: "/Images/category1.jpeg" },
+  { name: "Organic Spices", href: "/category/organic-spices", imageUrl: "/Images/category2.jpeg" },
+  { name: "Organic Oil", href: "/category/organic-oil", imageUrl: "/Images/category3.jpeg" },
+  { name: "Rice, Pulse", href: "/category/rice-pulse", imageUrl: "/Images/category4.jpeg" },
+  { name: "Super Foods", href: "/category/super-foods", imageUrl: "/Images/category5.jpeg" },
+  { name: "Sweeteners & Dairy", href: "/category/sweeteners-dairy", imageUrl: "/Images/category6.jpeg" },
+  { name: "Pitha", href: "/category/pitha", imageUrl: "/Images/category7.jpeg" }
 ];
 
 const categoriesMobileRow1 = categoriesDesktop.slice(0, Math.ceil(categoriesDesktop.length / 2));
