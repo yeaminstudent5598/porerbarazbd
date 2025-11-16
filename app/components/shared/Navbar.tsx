@@ -165,7 +165,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Category Links */}
-        <nav className="bg-green-800 text-white py-3 hidden md:flex">
+        <nav className="bg-green-800 mb-0 text-white py-3 hidden md:flex">
           <div className="container mx-auto flex justify-center items-center px-4">
             <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 md:gap-x-8">
               <motion.li whileHover={navLinkHoverEffect}>
