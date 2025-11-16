@@ -6,20 +6,25 @@ import { cn } from "@/app/lib/utils";
 
 const ToastProvider = ToastPrimitives.Provider;
 
+// ✅ --- সমাধান শুরু ---
+// Radix-এর Viewport একটি <ol> এলিমেন্ট, তাই টাইপটি সরাসরি Radix থেকে নেওয়া হলো।
 const ToastViewport = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->((props, ref) => (
+  React.ElementRef<typeof ToastPrimitives.Viewport>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
+>(({ className, ...props }, ref) => (
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
       "fixed bottom-0 right-0 flex flex-col p-4 gap-2 w-[390px] max-w-full m-0 list-none z-[999]",
-      props.className
+      className // props.className এর বদলে className ব্যবহার করা হলো
     )}
     {...props}
   />
 ));
-ToastViewport.displayName = "ToastViewport";
+// displayName সরাসরি Radix থেকে নেওয়া হলো
+ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
+// ✅ --- সমাধান শেষ ---
+
 
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
