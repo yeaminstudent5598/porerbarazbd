@@ -1,12 +1,17 @@
 import NextAuth from "next-auth";
+// ✅ সমাধান: টাইপগুলো ইম্পোর্ট করুন
+import { NextAuthOptions, Session, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
+
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { UserService } from "@/modules/user/user.service";
-import User from "@/modules/user/user.model";
+import UserSchema from "@/modules/user/user.model"; // 'User' নামে কনফ্লিক্ট এড়াতে 'UserSchema' ইম্পোর্ট করছি
 import dbConnect from "@/app/lib/dbConnect";
-import { signJwtToken } from "@/app/lib/jwt"; // <-- ১. আপনার কাস্টম JWT সাইনার ইম্পোর্ট করুন
+import { signJwtToken } from "@/app/lib/jwt";
 
-const handler = NextAuth({
+// ✅ সমাধান: সম্পূর্ণ কনফিগারেশনটিকে একটি 'export' করা ভ্যারিয়েবলে রাখুন
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -21,7 +26,7 @@ const handler = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
         
-        await dbConnect(); // <-- ২. ডিবি কানেক্ট এখানেও কল করা ভালো
+        await dbConnect();
         
         const user = await UserService.findUserByEmailWithPassword(
           credentials.email
@@ -31,56 +36,54 @@ const handler = NextAuth({
         const isValid = await user.comparePassword(credentials.password);
         if (!isValid) return null;
 
-        // <-- ৩. authorize থেকে role সহ পুরো ইউজার অবজেক্ট রিটার্ন করুন
-        // (নিশ্চিত করুন আপনার User মডেলে 'role' আছে)
         return {
           id: user._id.toString(),
           name: user.name,
           email: user.email,
-          role: user.role, // <-- role এখানে থাকা জরুরি
+          role: user.role, 
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      // 'user' অবজেক্টটি শুধু প্রথমবার লগইনের সময় পাওয়া যায়
+    // ✅ সমাধান: 'token' এবং 'user' এর জন্য টাইপ যোগ করা হয়েছে
+    async jwt({ token, user }: { token: JWT, user?: User }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role; // <-- ৪. টোকেনে role যোগ করুন
+        // ✅ সমাধান: user এখন টাইপ করা, তাই (as any) লাগবে না
+        token.role = user.role; 
       }
 
-      // <-- ৫. আপনার কাস্টম অ্যাক্সেস টোকেন তৈরি করুন (মিডলওয়্যারের জন্য)
       const tokenData = {
         userId: token.id as string,
         role: token.role as string,
       };
       
-      // app/lib/jwt.ts এর ফাংশন দিয়ে সাইন করা হচ্ছে
       token.customAccessToken = signJwtToken(tokenData);
       
       return token;
     },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string; // <-- ৬. সেশনে role যোগ করুন
+    // ✅ সমাধান: 'session' এবং 'token' এর জন্য টাইপ যোগ করা হয়েছে
+    async session({ session, token }: { session: Session, token: JWT }) {
+      if (token && session.user) { // session.user আছে কিনা চেক করা ভালো
+        session.user.id = token.id;
+        session.user.role = token.role;
         
-        // <-- ৭. কাস্টম টোকেনটি সেশনে যোগ করুন (ফ্রন্টএন্ডে ব্যবহারের জন্য)
-        session.accessToken = token.customAccessToken as string;
+        // 'session.accessToken' টাইপটি 'next-auth.d.ts' ফাইলে যোগ করতে হবে
+        (session as any).accessToken = token.customAccessToken as string;
       }
       return session;
     },
     async signIn({ user, account }) {
       await dbConnect();
       if (account?.provider === "google") {
-        const existingUser = await User.findOne({ email: user.email });
+        const existingUser = await UserSchema.findOne({ email: user.email });
         if (!existingUser) {
-          await User.create({
+          await UserSchema.create({
             name: user.name,
             email: user.email,
             password: "google_oauth_dummy", 
-            // এখানেও role: 'user' সেট করে দেওয়া ভালো
+            role: 'user' // Google সাইন-ইন এর জন্য ডিফল্ট 'user' role
           });
         }
       }
@@ -91,6 +94,9 @@ const handler = NextAuth({
     signIn: "/auth/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+// ✅ সমাধান: এক্সপোর্ট করা ভ্যারিয়েবলটি এখানে পাস করা হয়েছে
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
