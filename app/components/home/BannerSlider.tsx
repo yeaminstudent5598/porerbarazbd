@@ -43,8 +43,8 @@ const StaticBannerGrid = () => {
   return (
     // কন্টেইনার থেকে padding (px-4 md:px-6) বাদ দেয়া হলো 
     // যাতে ব্যানারটি পুরো স্ক্রিন জুড়ে থাকে।
-    <section className="container mx-auto">
-      <div className="relative rounded-lg shadow-lg overflow-hidden">
+    <section className="mt-0">
+      <div className="relative rounded-lg overflow-hidden">
         <Slider {...settings}>
           {bannerData.map((banner) => (
             <div 
@@ -62,7 +62,7 @@ const StaticBannerGrid = () => {
                   alt={banner.altText}
                   fill
                   priority
-    T             style={{ objectFit: 'cover', objectPosition: 'center' }}
+                 style={{ objectFit: 'cover', objectPosition: 'center' }}
                   // rounded-lg ক্লাসটি ইমেজ থেকে সরানো হয়েছে 
                   // কারণ এটি এখন প্যারেন্ট div-এ আছে।
                   className="cursor-pointer" 
