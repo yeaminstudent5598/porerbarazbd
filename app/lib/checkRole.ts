@@ -1,4 +1,6 @@
 // app/lib/checkRole.ts
+// ❗️ এই ফাইলটি সঠিক আছে। উপরের পরিবর্তনে এটি কাজ করবে।
+
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
