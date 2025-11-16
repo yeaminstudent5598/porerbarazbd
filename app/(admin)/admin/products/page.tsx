@@ -103,7 +103,7 @@ export default function ManageProductsPage() {
   // ✅ SWR for fetching data safely
   const { data: apiResponse, error, isLoading, mutate: revalidateProducts } = useSWR<ApiResponse>(
     apiUrl,
-    (url) => (url ? fetcher(url, token ?? undefined) : null),
+    (url) => fetcher(url, token ?? undefined), // ✅ সমাধান: : null অংশটি বাদ দিন
     { revalidateOnFocus: false }
   );
 
