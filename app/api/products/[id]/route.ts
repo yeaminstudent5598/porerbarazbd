@@ -1,4 +1,3 @@
-// app/api/products/[id]/route.ts
 import { NextRequest } from 'next/server';
 import {
   getSingleProductController,
@@ -8,49 +7,39 @@ import {
 import { catchAsync } from '@/app/lib/utils/catchAsync';
 import dbConnect from '@/app/lib/dbConnect';
 import { AuthenticatedRequest, authGuard } from '@/middlewares/auth.middleware';
-import AppError from '@/app/lib/utils/AppError';
-import { ProductService } from '@/modules/product/product.service';
-import sendResponse from '@/app/lib/sendResponse';
 
+// Next.js 15: Params is a Promise
+type Props = {
+  params: Promise<{ id: string }>;
+};
 
+// ✅ GET: Public Access (No authGuard)
+// আমরা props.params কে await করে আনবক্স করছি
 const getHandler = catchAsync(
-  authGuard('admin')( // <-- অ্যাডমিন কিনা চেক করুন
-    async (req: AuthenticatedRequest, { params }: { params: { id: string } }) => {
-      await dbConnect();
-      
-      const { id } = params;
-      
-      // === অ্যাডমিন সার্ভিস কল করুন (যেকোনো স্ট্যাটাসের প্রোডাক্ট আনবে) ===
-      const product = await ProductService.getAdminProductByIdFromDB(id);
-
-      if (!product) {
-        throw new AppError(404, 'Product not found with this ID');
-      }
-
-      return sendResponse(
-        200,
-        'Admin: Product retrieved successfully',
-        product
-      );
-    }
-  )
+  async (req: NextRequest, props: Props) => {
+    await dbConnect();
+    const params = await props.params; 
+    return getSingleProductController(req, { params });
+  }
 );
 
-
+// ✅ PUT: Admin Only
 const putHandler = catchAsync(
   authGuard('admin')(
-    async (req: AuthenticatedRequest, { params }: { params: { id: string } }) => {
+    async (req: AuthenticatedRequest, props: Props) => {
       await dbConnect();
+      const params = await props.params;
       return updateProductController(req, { params });
     }
   )
 );
 
-
+// ✅ DELETE: Admin Only
 const deleteHandler = catchAsync(
   authGuard('admin')(
-    async (req: AuthenticatedRequest, { params }: { params: { id: string } }) => {
+    async (req: AuthenticatedRequest, props: Props) => {
       await dbConnect();
+      const params = await props.params;
       return deleteProductController(req, { params });
     }
   )
