@@ -66,3 +66,19 @@ export const updateMeController = async (req: AuthenticatedRequest) => {
 
   return sendResponse(200, 'Profile updated successfully', updatedUser);
 };
+
+
+// GET All Customers with Stats
+export const getAllCustomersController = async (req: NextRequest) => {
+  const customers = await UserService.getAllCustomersWithStats();
+  return sendResponse(200, 'Customers retrieved successfully', customers);
+};
+
+// GET Single Customer Details
+export const getCustomerDetailsController = async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
+  const customer = await UserService.getCustomerDetailsById(id);
+  if (!customer) throw new AppError(404, 'Customer not found');
+  
+  return sendResponse(200, 'Customer details retrieved', customer);
+};
