@@ -77,17 +77,17 @@ export default function AboutPage() {
             <motion.div {...fadeIn}>
               <span className="font-semibold text-green-600 text-lg">আমাদের গল্প</span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-6">
-                শেকড়ের সন্ধানে <span className="text-green-700">Porer Bazar BD</span>
+                শেকড়ের সন্ধানে <span className="text-green-700">ShotejFoods  </span>
               </h2>
               <div className="space-y-4 text-gray-700 leading-relaxed">
                 <p>
-                  শহুরে জীবনের ব্যস্ততায় আমরা অনেকেই হারিয়ে ফেলছি আমাদের গ্রামীণ ঐতিহ্য আর খাঁটি খাবারের স্বাদ। মেশিনের ভিড়ে চাপা পড়ে যাচ্ছে ঢেঁকি ছাঁটা চালের গন্ধ, ঘানিতে ভাঙা তেলের ঝাঁঝ, কিংবা বাড়ির উঠোনে বানানো পিঠার আমেজ। Porer Bazar BD-এর জন্ম সেই হারানো স্বাদ ও স্মৃতি ফিরিয়ে আনার একটি আন্তরিক প্রচেষ্টা থেকে।
+                  শহুরে জীবনের ব্যস্ততায় আমরা অনেকেই হারিয়ে ফেলছি আমাদের গ্রামীণ ঐতিহ্য আর খাঁটি খাবারের স্বাদ। মেশিনের ভিড়ে চাপা পড়ে যাচ্ছে ঢেঁকি ছাঁটা চালের গন্ধ, ঘানিতে ভাঙা তেলের ঝাঁঝ, কিংবা বাড়ির উঠোনে বানানো পিঠার আমেজ। ShotejFoods  -এর জন্ম সেই হারানো স্বাদ ও স্মৃতি ফিরিয়ে আনার একটি আন্তরিক প্রচেষ্টা থেকে।
                 </p>
                 <p>
                   আমরা বিশ্বাস করি, ভালো খাবারের শুরু হয় তার উৎস থেকে। তাই আমরা বাংলাদেশের বিভিন্ন প্রান্তের গ্রামগুলোতে যাই, মিশে যাই সেখানকার সাধারণ মানুষগুলোর সাথে। খুঁজে বের করি সেইসব কৃষক ও কারিগরদের, যারা আজও পূর্বপুরুষদের শেখানো পদ্ধতিতেই পরম যত্নে খাঁটি পণ্য তৈরি করছেন – হোক তা হাতে ভাজা মুড়ি, শিলাপাটা বাটা মশলা, বা লাকড়ির চুলায় বানানো আচার।
                 </p>
                 <p>
-                  আমাদের লক্ষ্য শুধু খাঁটি পণ্য বিক্রি করা নয়, বরং শহরের যান্ত্রিক জীবনের সাথে গ্রামের সেই সহজ-সরল, স্নিগ্ধ জীবনধারা আর শত বছরের ঐতিহ্যের একটি সেতুবন্ধন তৈরি করা। প্রতিটি Porer Bazar BD পণ্যের সাথে আমরা চেষ্টা করি সেই মাটির গন্ধ আর মানুষের মমতাটুকু আপনার কাছে পৌঁছে দিতে।
+                  আমাদের লক্ষ্য শুধু খাঁটি পণ্য বিক্রি করা নয়, বরং শহরের যান্ত্রিক জীবনের সাথে গ্রামের সেই সহজ-সরল, স্নিগ্ধ জীবনধারা আর শত বছরের ঐতিহ্যের একটি সেতুবন্ধন তৈরি করা। প্রতিটি ShotejFoods   পণ্যের সাথে আমরা চেষ্টা করি সেই মাটির গন্ধ আর মানুষের মমতাটুকু আপনার কাছে পৌঁছে দিতে।
                 </p>
               </div>
             </motion.div>
@@ -136,14 +136,14 @@ export default function AboutPage() {
               মাটির মানুষ, খাঁটি কারিগর
             </h2>
             <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-              তাদের শ্রম আর সততাই Porer Bazar BD-এর শক্তি। পরিচয় করিয়ে দিচ্ছি আমাদের কয়েকজন কৃষক ও কারিগরের সাথে।
+              তাদের শ্রম আর সততাই ShotejFoods  -এর শক্তি। পরিচয় করিয়ে দিচ্ছি আমাদের কয়েকজন কৃষক ও কারিগরের সাথে।
             </p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
             {[
               { name: "রহিমা বেগম", village: "চাঁদপুর", product: "হাতে ভাজা মুড়ি ও চালের গুঁড়া", quote: "নিজের হাতে তৈরি করি, যেমন নিজের ঘরের জন্য বানাই। কোনো ভেজাল নাই。", img: "https://i.ibb.co/QvJDsG8y/Textbook-Travel-Currently-Exploring-The-Animal-Kingdom.jpg" },
               { name: "আব্দুল খালেক", village: "নওগাঁ", product: "অর্গানিক হলুদ ও মরিচের গুঁড়া", quote: "জমিতে কোনো সার-বিষ দেই না। যা হয়, আল্লার রহমতে ভালোই হয়।", img: "https://i.ibb.co/Dgj5tt94/Download-premium-image-of-Indian-farmer-doing-agriculture-vegetable-smiling-plant-about-indian-farme.jpg" },
-              { name: "ফরিদা ইয়াসমিন", village: "বিক্রমপুর", product: "বিভিন্ন প্রকার আচার", quote: "শাশুড়ির কাছ থেকে শেখা রেসিপি। যত্ন করে বানাই, সবাই খুব পছন্দ করে।", img: "https://images.stockcake.com/public/f/0/2/f02a71da-9a50-4e0e-bd4d-0db5dd5b140c_medium/traditional-cooking-scene-stockcake.jpg" },
+              { name: "ফরিদা ইয়াসমিন", village: "বিক্রমপুর", product: "বিভিন্ন প্রকার আচার", quote: "শাশুড়ির কাছ থেকে শেখা রেসিপি। যত্ন করে বানাই, সবাই খুব পছন্দ করে।", img: "https://images.stockcake.com/public/f/0/2/f02a71da-9a50-4e0e- 4d-0db5dd5b140c_medium/traditional-cooking-scene-stockcake.jpg" },
             ].map((person, index) => (
                <motion.div
                 key={person.name}
@@ -182,7 +182,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { name: "ইয়ামিন মাদবর", title: "প্রতিষ্ঠাতা", img: "https://scontent.fdac24-5.fna.fbcdn.net/v/t39.30808-6/509432432_1977168029754058_6770209236524440672_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEPeGWJzJS1LznRTfMl5Oh2xdc-8fK24ozF1z7x8rbijLC5NB5EDA3wtdCiSbgo4UfDxW7m_mk92djTm86b4H66&_nc_ohc=DAFnm5VlE-sQ7kNvwGHEj2T&_nc_oc=AdmlGiBiHaDuUCkKg_Te1rZuCezk5ykWlus2rYPgKXG9LWOuB9v83kCxVYEf8rO7X7w&_nc_zt=23&_nc_ht=scontent.fdac24-5.fna&_nc_gid=JgKXwS6uW386hSC2DRr_bA&oh=00_Afd4010Cy0ZpeMdZxNvmoaM_wXBFcSehcTBGnnLSRHmQLg&oe=68FD5151" },
-              { name: "মোঃ মিজান", title: "সংগ্রহকারী", img: "https://scontent.fdac24-1.fna.fbcdn.net/v/t39.30808-6/484817937_2113263422438620_2586234141452055034_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGB_nwBDRQTXcbxINdE3TVmZptpu9VBLixmm2m71UEuLBNCQMGZp1jSYRlCnNh5vu5iV3_HQTUWE-xLAzi--Pae&_nc_ohc=xe25GgLe6x0Q7kNvwHJ1o0i&_nc_oc=AdlruXah-I0zKTbFyJ3bSLwdAJsbx-Q4GPTeBdcqP5wUDeAElRrdtp3HuNhTchjc1E8&_nc_zt=23&_nc_ht=scontent.fdac24-1.fna&_nc_gid=AU0yh1dl3C2EMs-ejMjXBA&oh=00_AffXFWMwCCGmZwOUwMQs47UHKoFaxHI1re6c3ZwbfvRaaA&oe=68FD3176" },
+              { name: "মোঃ মিজান", title: "সংগ্রহকারী", img: "https://scontent.fdac24-1.fna.fbcdn.net/v/t39.30808-6/484817937_2113263422438620_2586234141452055034_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGB_nw RQTXcbxINdE3TVmZptpu9VBLixmm2m71UEuLBNCQMGZp1jSYRlCnNh5vu5iV3_HQTUWE-xLAzi--Pae&_nc_ohc=xe25GgLe6x0Q7kNvwHJ1o0i&_nc_oc=AdlruXah-I0zKTbFyJ3bSLwdAJsbx-Q4GPTe cqP5wUDeAElRrdtp3HuNhTchjc1E8&_nc_zt=23&_nc_ht=scontent.fdac24-1.fna&_nc_gid=AU0yh1dl3C2EMs-ejMjXBA&oh=00_AffXFWMwCCGmZwOUwMQs47UHKoFaxHI1re6c3ZwbfvRaaA&oe=68FD3176" },
               { name: "ইউসুফ রহমান", title: "মান নিয়ন্ত্রণ", img: "https://scontent.fdac24-2.fna.fbcdn.net/v/t39.30808-6/481899771_1013994870595916_9149949265966877033_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGOX4QOfOAP45rF71eI_azjnpdZErGj-U2el1kSsaP5TdgovHC30fCz5RhlTwKDvKvftJiENjd9JE-cBKrXn9X6&_nc_ohc=e7hcAN_eXhYQ7kNvwE-uqXb&_nc_oc=AdkfDzx2RIXMrD35bziysX2jrsUDa8lnaLboOt-9GH6nD7PiLtz71jTtgFm60sNe7Wo&_nc_zt=23&_nc_ht=scontent.fdac24-2.fna&_nc_gid=XlAcjtIhrAQbYsheVhwMYQ&oh=00_AfeThw0aVX_jGGX0CfYTDhYgQ-5DCR42-8u8psYWbjXkhg&oe=68FD4A94" },
               { name: "মাহমুদুল এইচ মারুফ", title: "ডেলিভারি সমন্বয়ক", img: "https://scontent.fdac24-2.fna.fbcdn.net/v/t39.30808-6/481006126_1342102890576039_7977481923929653239_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGiC-FJssUp3h7xlptgpkNOOIX5vJ6luyo4hfm8nqW7Kml56M8INR13qHTdUwLj7VwWHTNMHLLGK9hbzXydxH0d&_nc_ohc=CuRhWpHtJ0QQ7kNvwGMaGIR&_nc_oc=AdmL8cWoHSoq8S1P401Wj0IGB6i4AMj9KNxW-G8ynbZAD3KM-0x5BmbQFZEcg_1wQMI&_nc_zt=23&_nc_ht=scontent.fdac24-2.fna&_nc_gid=Ektv3e9YkZGaW12z_Z3j3A&oh=00_Afep7Bup4au2xsiHX2CkWpCTp-mBs9wHx76-DaTxnm6b_w&oe=68FD3069" },
             ].map((member, index) => (
