@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: { params: { categorySlug: str
     if (!category) return { title: 'Category Not Found' };
 
     return {
-      title: `${category.name} | PorerbazarBD`,
+      title: `${category.name} | ShotejFoods`,
       description: `Browse all products in the ${category.name} category.`,
     };
   } catch (error) {
