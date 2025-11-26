@@ -137,10 +137,10 @@ export default function ContactPage() { // <--- নিশ্চিত করু�
                 <p className="text-sm sm:text-base text-gray-600 mb-1">যেকোনো সাপোর্টের জন্য আমাদের ইমেইল করুন</p>
                  {/* TODO: Update with your email */}
                 <a
-                  href="mailto:support@porerbazarbd.com"
+                  href="mailto:support@ShotejFoods.com"
                   className="text-base sm:text-lg font-medium text-green-700 hover:underline"
                 >
-                  support@porerbazarbd.com
+                  support@ShotejFoods.com
                 </a>
               </div>
             </div>
