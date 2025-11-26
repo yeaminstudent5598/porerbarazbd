@@ -30,6 +30,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'pin.it', // <-- Pinterest URL Shortener
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
       // ... অন্যান্য ডোমেইন ...
     ],
   },
