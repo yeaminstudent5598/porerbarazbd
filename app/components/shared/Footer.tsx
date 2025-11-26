@@ -45,14 +45,14 @@ const Footer = () => {
               {/* TODO: Use your white/light logo */}
               <img
                 src="/logo-white.png" // Assumes logo-white.png is in public folder
-                alt="Porer Bazar BD"
+                alt=" Shotej Foods  "
                 className="h-12 mb-4" // Adjust height
                 width={140} // Add width
                 height={48} // Add height
               />
             </Link>
             <p className="text-sm leading-relaxed">
-              গ্রামীণ ঐতিহ্যে পরেরবাজারবিডি অনলাইন শপে আপনাকে স্বাগতম। বিশ্বস্ততার সাথে সারা বাংলাদেশে খাঁটি ও অর্গানিক পণ্যের হোম ডেলিভারী দিয়ে থাকি।
+              গ্রামীণ ঐতিহ্যে সতেজফুডস অনলাইন শপে আপনাকে স্বাগতম। বিশ্বস্ততার সাথে সারা বাংলাদেশে খাঁটি ও অর্গানিক পণ্যের হোম ডেলিভারী দিয়ে থাকি।
             </p>
             <div className="space-y-2 pt-2">
               <div className="flex items-start gap-3">
@@ -71,7 +71,7 @@ const Footer = () => {
                 <Mail size={18} className="text-green-400 flex-shrink-0" />
                 <span className="text-sm hover:text-white transition-colors">
                   {/* TODO: Add your actual email */}
-                  <a href="mailto:support@porerbazarbd.com">support@porerbazarbd.com</a>
+                  <a href="mailto:support@ShotejFoods.com">support@ShotejFoods .com</a>
                 </span>
               </div>
             </div>
@@ -143,7 +143,7 @@ const Footer = () => {
         {/* --- Bottom Bar --- */}
         <div className="border-t border-gray-700 mt-12 pt-6 text-center text-sm text-gray-400">
           <p>
-            &copy; {new Date().getFullYear()} Porer Bazar BD. All Rights Reserved.
+            &copy; {new Date().getFullYear()}  Shotej Foods  . All Rights Reserved.
             Developed by <a href="https://pixelandcodeweb.vercel.app/" className="font-medium text-green-400 hover:text-white" target="_blank" rel="noopener noreferrer">Pixel & Code</a>.
           </p>
         </div>
