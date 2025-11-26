@@ -82,7 +82,7 @@ export default function RegisterPage() {
         
         <div className="text-center">
           <Link href="/" className="inline-block">
-            <img src="/logo.png" alt="Porer Bazar BD" className="h-14 mx-auto" />
+            <img src="/logo.png" alt="Shotej Foods" className="h-14 mx-auto" />
           </Link>
           <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-gray-900">
             নতুন একাউন্ট তৈরি করুন
