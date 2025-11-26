@@ -17,7 +17,7 @@ cloudinary.config({
  */
 export const uploadToCloudinary = (
   buffer: Buffer,
-  folder: string = config.cloudinary_folder || 'porerbazarbd'
+  folder: string = config.cloudinary_folder || 'ShotejFoods'
 ): Promise<any> => { // CloudinaryUploadResult টাইপ ব্যবহার করা যেতে পারে
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
