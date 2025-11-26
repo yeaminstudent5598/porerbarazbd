@@ -69,7 +69,7 @@ const WhyChooseUs = () => {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.5 }}
         >
-          কেন <span className="text-green-700">পরেরবাজারবিডি</span> সেরা?
+          কেন <span className="text-green-700">সতেজফুডস</span> সেরা?
         </motion.h2>
 
         <motion.div
