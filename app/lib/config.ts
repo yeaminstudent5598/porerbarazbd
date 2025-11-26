@@ -28,7 +28,7 @@ const config = {
   port: process.env.PORT || 3000,
   mongo_uri: process.env.MONGO_URI,
   jwt: {
-    access_secret: process.env.JWT_ACCESS_SECRET, // ! চিহ্ন বাদ দেওয়া ভালো, কারণ আমরা উপরে চেক করেছি
+    access_secret: process.env.JWT_ACCESS_SECRET, 
     access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN || '1d',
   },
   bcrypt_salt_rounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10),
@@ -37,8 +37,7 @@ const config = {
   cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
-  cloudinary_folder: process.env.CLOUDINARY_FOLDER || 'porerbazarbd',
-  // ======================================
+  cloudinary_folder: process.env.CLOUDINARY_FOLDER || 'ShotejFoods',
 };
 
 export default config;
