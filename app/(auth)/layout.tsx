@@ -22,7 +22,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
       </main>
 
       <footer style={{ padding: '1rem', borderTop: '1px solid #ccc', marginTop: '2rem' }}>
-        <p>&copy; 2025 PorerBazarBD</p>
+        <p>&copy; 2025 ShotejFoods</p>
       </footer>
     </div>
   );
