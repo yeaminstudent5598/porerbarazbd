@@ -89,7 +89,7 @@ const Navbar = () => {
             <Link href="/" className="flex-shrink-0">
               <MotionImage
                 src="https://i.ibb.co/vxsq679p/Gemini-Generated-Image-deyncbdeyncbdeyn-removebg-preview.png"
-                alt="Porer Bazar BD"
+                alt=" Shotej Foods"
                 className="h-14 w-auto"
                 whileHover={{ scale: 1.05 }}
                 width={150}
