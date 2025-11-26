@@ -1,12 +1,11 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Poppins, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import { cn } from "./lib/utils";
 import Providers from "./components/Providers";
 import { AuthProvider } from "./lib/context/AuthContext";
-import { ToastProvider } from "@/components/ui/toast";
-// TODO: Import Providers (Auth, Cart, Theme, QueryClient etc.)
+// 1. ToastProvider বাদ দিয়ে Toaster ইম্পোর্ট করুন (Shadcn Sonner থেকে)
+import { Toaster } from "@/components/ui/sonner"; 
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -21,9 +20,8 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "Porer Bazar BD - Grameen & Organic Products",
+  title: "Shotej Foods - Grameen & Organic Products",
   description: "Authentic rural and organic products from Bangladesh, delivered to your doorstep.",
-  // Add favicon link here if not in public folder root
 };
 
 export default function RootLayout({
@@ -35,25 +33,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased", // font-sans maps to your tailwind config
+          "min-h-screen bg-background font-sans antialiased",
           poppins.variable,
           hindSiliguri.variable
         )}
       >
-        {/*
-        TODO: Wrap children with Providers
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <CartProvider>
-        */} <ToastProvider><AuthProvider> <Providers>{children}</Providers> </AuthProvider> </ToastProvider>
-               
-        {/*
-              </CartProvider>
-            </AuthProvider>
-          </QueryClientProvider>
-        </ThemeProvider>
-        */}
+        <AuthProvider>
+          <Providers>
+            {children}
+            {/* 2. এখানে Toaster কম্পোনেন্টটি যুক্ত করুন */}
+            <Toaster position="top-right" richColors />
+          </Providers>
+        </AuthProvider>
       </body>
     </html>
   );
