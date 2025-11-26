@@ -14,7 +14,8 @@ import {
   Menu,
   Settings,
   LifeBuoy,
-  LogOut
+  LogOut,
+  LayoutGrid
 } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ import { cn } from '../lib/utils';
 const adminNavLinks = [
   { name: 'Dashboard', href: '/admin', icon: Home, exact: true },
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart, badge: '6' },
+  { name: 'Categories', href: '/admin/categories', icon: LayoutGrid },
   { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Analytics', href: '/admin/analytics', icon: LineChart },
@@ -113,7 +115,7 @@ export default function AdminLayout({
             <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6">
               <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
                 <Package className="h-6 w-6 text-green-500" />
-                <span className="text-xl">PorerBazar Admin</span>
+                <span className="text-xl">ShotejFoods Admin</span>
               </Link>
             </div>
             {renderNavLinks()} {/* মোবাইল সাইডবার লিঙ্ক */}
@@ -170,7 +172,7 @@ export default function AdminLayout({
           <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6">
             <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
               <Package className="h-6 w-6 text-green-500" />
-              <span className="text-xl">PorerBazar Admin</span>
+              <span className="text-xl">ShotejFoods Admin</span>
             </Link>
           </div>
           {renderNavLinks()} {/* সাইডবার লিঙ্ক */}
