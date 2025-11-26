@@ -1,215 +1,229 @@
-// app/(admin)/admin/orders/page.tsx
-'use client'; // Required for useState, client components like DropdownMenu
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"; // shadcn/ui Table
-import { Badge } from '@/components/ui/badge'; // shadcn/ui Badge
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import { Badge } from '@/components/ui/badge';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Eye, Truck, XCircle, Filter, FileDown } from 'lucide-react'; // Added Filter, FileDown
+import { MoreHorizontal, Eye, Truck, XCircle, FileDown, Loader2, AlertTriangle, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Import Card components
-import { Input } from '@/components/ui/input'; // For Search/Filter
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import useSWR, { mutate } from 'swr';
+import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image'; // ✅ ইমেজ ইম্পোর্ট করা হলো
 
-// Define Order type (adjust as needed)
-interface Order {
-    id: string; // User-friendly order number like #EFOODS-1052
-    orderDbId: string; // Actual DB ID (e.g., MongoDB ObjectId as string)
-    date: string; // Or Date object
-    customer: string;
-    total: number;
-    status: 'Pending' | 'Processing' | 'Delivered' | 'Cancelled';
-}
+// Helper Functions
+const formatOrderId = (id: string) => `#ORD-${id.slice(-6).toUpperCase()}`;
 
-// TODO: Fetch this data from your API (ideally using Server Component props or useEffect)
-const demoOrders: Order[] = [
-  {
-    id: "#EFOODS-1052",
-    orderDbId: "67890def1234567890abcdef",
-    date: "October 20, 2025",
-    customer: "সাদিয়া ইসলাম",
-    total: 1480.00,
-    status: "Delivered",
-  },
-  {
-    id: "#EFOODS-1051",
-    orderDbId: "abcdef1234567890abcdef12",
-    date: "October 20, 2025",
-    customer: "আরিফুর রহমান",
-    total: 890.00,
-    status: "Processing",
-  },
-  {
-    id: "#EFOODS-1050",
-    orderDbId: "1234567890abcdef12345678",
-    date: "October 19, 2025",
-    customer: "নাসরিন সুলতানা",
-    total: 590.00,
-    status: "Pending",
-  },
-  {
-    id: "#EFOODS-1049",
-    orderDbId: "fedcba9876543210fedcba98",
-    date: "October 18, 2025",
-    customer: "কামাল আহমেদ",
-    total: 1250.00,
-    status: "Cancelled",
-  },
-];
-
-// Status Badge Component/Function
-const getStatusBadge = (status: Order['status']) => {
+const getStatusBadge = (status: string) => {
   switch (status) {
-    case 'Delivered':
-      return <Badge className="bg-green-100 text-green-700 border-green-200">{status}</Badge>;
-    case 'Processing':
-      return <Badge className="bg-blue-100 text-blue-700 border-blue-200">{status}</Badge>;
-    case 'Pending':
-      return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">{status}</Badge>;
-    case 'Cancelled':
-      return <Badge variant="destructive">{status}</Badge>;
-    default:
-      return <Badge variant="secondary">{status}</Badge>;
+    case 'Delivered': return <Badge className="bg-green-100 text-green-700 border-green-200">{status}</Badge>;
+    case 'Processing': return <Badge className="bg-blue-100 text-blue-700 border-blue-200">{status}</Badge>;
+    case 'Shipped': return <Badge className="bg-purple-100 text-purple-700 border-purple-200">{status}</Badge>;
+    case 'Pending': return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">{status}</Badge>;
+    case 'Cancelled': return <Badge variant="destructive">{status}</Badge>;
+    default: return <Badge variant="outline">{status}</Badge>;
   }
 };
 
-export default function ManageOrdersPage() {
-  // TODO: Implement actual data fetching, filtering, pagination, and state management
-  const [orders, setOrders] = useState<Order[]>(demoOrders);
-  const [searchTerm, setSearchTerm] = useState(''); // For filtering
+// Fetcher function
+const fetcher = async (url: string, token: string) => {
+    const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to fetch');
+    }
+    return res.json();
+};
 
-  // Example update status function (replace with API call)
-  const handleUpdateStatus = (orderDbId: string, newStatus: Order['status']) => {
-    console.log(`Updating order ${orderDbId} to ${newStatus}`);
-    setOrders(orders.map(order =>
-      order.orderDbId === orderDbId ? { ...order, status: newStatus } : order
-    ));
-    // TODO: Add API call to update status in the database
+export default function ManageOrdersPage() {
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const { data: session, status } = useSession();
+  const token = (session as any)?.accessToken;
+
+  // API URL Construction
+  const apiUrl = token ? `/api/v1/orders?page=${page}&limit=10&searchTerm=${searchTerm}` : null;
+
+  // Fetch Data
+  const { data: apiResponse, error, isLoading } = useSWR(
+    apiUrl, 
+    (url) => fetcher(url, token), 
+    { keepPreviousData: true }
+  );
+
+  const orders = apiResponse?.data || [];
+  const meta = apiResponse?.meta;
+
+  // Update Status Function
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
+    if (!token) {
+        toast.error("Unauthorized action");
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/api/v1/orders/${id}`, {
+            method: 'PATCH',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        if(!res.ok) throw new Error("Failed to update");
+        
+        toast.success(`Order marked as ${newStatus}`);
+        mutate(apiUrl); 
+    } catch (err) {
+        toast.error("Something went wrong");
+    }
   };
 
-  // Filter orders based on search term (simple example)
-  const filteredOrders = orders.filter(order =>
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  if (status === 'loading') {
+      return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="animate-spin"/></div>;
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header with Title, Filter, Export */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <h2 className="text-3xl font-bold text-gray-900">Manage Orders</h2>
-        <div className="flex gap-2 w-full sm:w-auto">
-           {/* TODO: Add filtering dropdown/modal */}
-          <Button variant="outline" className="w-full sm:w-auto">
-            <Filter size={16} className="mr-2"/> Filter
-          </Button>
-          {/* TODO: Implement export functionality */}
-          <Button variant="outline" className="w-full sm:w-auto">
-            <FileDown size={16} className="mr-2"/> Export
-          </Button>
-        </div>
+        <Button variant="outline"> <FileDown size={16} className="mr-2"/> Export </Button>
       </div>
 
-      {/* Orders Table */}
       <Card>
-           <CardHeader>
-              <CardTitle>All Orders</CardTitle>
-              <CardDescription>View, manage, and update customer orders.</CardDescription>
-               {/* Search Input */}
-              <div className="pt-4">
-                 <Input
-                    type="search"
-                    placeholder="Search by Order ID or Customer..."
-                    className="w-full md:max-w-sm"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                 />
-              </div>
-          </CardHeader>
-           <CardContent>
-             <div className="border rounded-lg overflow-hidden">
-                <Table>
-                    <TableHeader className="bg-gray-50 dark:bg-gray-800">
+        <CardHeader>
+          <CardTitle>All Orders</CardTitle>
+          <CardDescription>Manage customer orders.</CardDescription>
+          <div className="pt-4">
+             <Input 
+                placeholder="Search by Customer Name or Phone..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+             />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                <TableRow>
+                  {/* ✅ নতুন কলাম: Image */}
+                  <TableHead className="w-[80px]">Image</TableHead>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading && (
                     <TableRow>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300 w-[140px]">Order ID</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Date</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Customer</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Status</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300 text-right">Total</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300 text-center w-[100px]">Actions</TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {filteredOrders.length === 0 && (
-                        <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                            No orders found{searchTerm ? ' matching your search' : ''}.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                    {filteredOrders.map((order) => (
-                        <TableRow key={order.orderDbId}>
-                        <TableCell className="font-medium">{order.id}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{order.date}</TableCell>
-                        <TableCell className="text-sm">{order.customer}</TableCell>
-                        <TableCell>{getStatusBadge(order.status)}</TableCell>
-                        <TableCell className="text-right text-sm">৳ {order.total.toFixed(2)}</TableCell>
-                        <TableCell className="text-center">
-                            {/* Actions Dropdown */}
-                            <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Order actions</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem asChild>
-                                {/* Link using the URL-safe encoded ID */}
-                                <Link href={`/admin/orders/${encodeURIComponent(order.id)}`}>
-                                    <Eye className="mr-2 h-4 w-4" /> View Details
-                                </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(order.orderDbId, 'Processing')} disabled={order.status === 'Processing' || order.status === 'Delivered' || order.status === 'Cancelled'}>
-                                <Truck className="mr-2 h-4 w-4 text-blue-500" /> Mark as Processing
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(order.orderDbId, 'Delivered')} disabled={order.status === 'Delivered' || order.status === 'Cancelled'}>
-                                <Truck className="mr-2 h-4 w-4 text-green-500" /> Mark as Delivered
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(order.orderDbId, 'Cancelled')} disabled={order.status === 'Delivered' || order.status === 'Cancelled'} className="text-red-500 focus:bg-red-50 focus:text-red-700 cursor-pointer">
-                                <XCircle className="mr-2 h-4 w-4" /> Cancel Order
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
+                        <TableCell colSpan={7} className="h-24 text-center">
+                            <Loader2 className="animate-spin mx-auto h-6 w-6 text-green-600"/>
                         </TableCell>
-                        </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
-              </div>
-              {/* TODO: Add Pagination controls */}
-               <div className="flex items-center justify-end space-x-2 py-4">
-                 <Button variant="outline" size="sm" /* onClick={goToPrevPage} disabled={!hasPrevPage} */ > Previous </Button>
-                 <Button variant="outline" size="sm" /* onClick={goToNextPage} disabled={!hasNextPage} */ > Next </Button>
-             </div>
-           </CardContent>
+                    </TableRow>
+                )}
+                
+                {error && (
+                    <TableRow>
+                        <TableCell colSpan={7} className="text-center text-red-500 h-24">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <AlertTriangle className="h-6 w-6"/>
+                                <p>{error.message === "Forbidden. You do not have permission." ? "Access Denied: Admin Only" : "Failed to load data"}</p>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                )}
+
+                {!isLoading && !error && orders.length === 0 && (
+                    <TableRow>
+                        <TableCell colSpan={7} className="text-center h-24 text-gray-500">
+                            No orders found.
+                        </TableCell>
+                    </TableRow>
+                )}
+                
+                {!isLoading && orders.map((order: any) => (
+                  <TableRow key={order._id}>
+                    {/* ✅ Image Cell: অর্ডারের প্রথম আইটেমের ছবি দেখাবে */}
+                    <TableCell>
+                        <div className="relative h-12 w-12 rounded-md overflow-hidden border bg-gray-50">
+                          {order.items?.[0]?.image ? (
+                            <Image
+                              src={order.items[0].image}
+                              alt="Order Item"
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-gray-400">
+                              <ImageIcon className="h-5 w-5" />
+                            </div>
+                          )}
+                        </div>
+                    </TableCell>
+
+                    <TableCell className="font-medium">{formatOrderId(order._id)}</TableCell>
+                    
+                    <TableCell className="text-sm text-muted-foreground">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    
+                    {/* ✅ Customer Cell: ফোন নাম্বার এখানে শো করা হচ্ছে */}
+                    <TableCell>
+                        <div className="flex flex-col">
+                            <span className="font-medium text-gray-900">{order.customerInfo?.name}</span>
+                            <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
+                                📞 {order.customerInfo?.phone || "N/A"}
+                            </span>
+                        </div>
+                    </TableCell>
+
+                    <TableCell>{getStatusBadge(order.status)}</TableCell>
+                    <TableCell className="text-right font-semibold">৳ {order.totalAmount}</TableCell>
+                    
+                    <TableCell className="text-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/orders/${order._id}`}><Eye className="mr-2 h-4 w-4" /> View Details</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleUpdateStatus(order._id, 'Processing')}>Mark Processing</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleUpdateStatus(order._id, 'Delivered')}>Mark Delivered</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleUpdateStatus(order._id, 'Cancelled')} className="text-red-600">Cancel Order</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1}>Previous</Button>
+            <Button variant="outline" size="sm" onClick={() => setPage(p => p+1)} disabled={!meta || meta.total <= page * meta.limit}>Next</Button>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
